@@ -7,6 +7,7 @@ import { ArticleDetailView } from './components/ArticleDetailView';
 import { BookmarksView } from './components/BookmarksView';
 import { NewsletterBox } from './components/NewsletterBox';
 import { Article, CategoryId, ViewMode, CATEGORIES } from './types';
+import { INITIAL_DEMO_ARTICLES } from './data/mockArticles';
 import { subscribeToArticles, incrementViews, incrementLikes } from './lib/firebase';
 import { Sparkles, Clock, Flame, Heart, Star, Layers } from 'lucide-react';
 
@@ -14,31 +15,33 @@ const STORAGE_KEY = 'mowang_articles_clean_v2';
 const BOOKMARKS_STORAGE_KEY = 'mowang_bookmarks_clean_v2';
 
 export function App() {
-  // Articles state initialized from LocalStorage (or real-time Firestore sync)
+  // Articles state initialized from LocalStorage or INITIAL_DEMO_ARTICLES
   const [articles, setArticles] = useState<Article[]>(() => {
     try {
       localStorage.removeItem('mowang_articles_v1');
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
+        if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed;
         }
       }
     } catch (e) {
       console.error('Failed to load articles from localStorage:', e);
     }
-    return [];
+    return INITIAL_DEMO_ARTICLES;
   });
 
   // Real-time Firestore synchronization for articles
   useEffect(() => {
     const unsubscribe = subscribeToArticles((firestoreArticles) => {
-      setArticles(firestoreArticles);
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(firestoreArticles));
-      } catch (e) {
-        console.error('Failed to save firestore articles to local cache:', e);
+      if (firestoreArticles.length > 0) {
+        setArticles(firestoreArticles);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(firestoreArticles));
+        } catch (e) {
+          console.error('Failed to save firestore articles to local cache:', e);
+        }
       }
     });
 
@@ -71,6 +74,103 @@ export function App() {
   const [sortBy, setSortBy] = useState<'newest' | 'hot' | 'likes'>('newest');
   const [filterFeatured, setFilterFeatured] = useState<boolean>(false);
   const [filterLongRead, setFilterLongRead] = useState<boolean>(false);
+
+  // Handle URL deep linking on initial load and popstate
+  useEffect(() => {
+    const parseUrlAndNavigate = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      let articleId = urlParams.get('article');
+
+      // Check pathname (e.g. /article/some-id or /?/article/some-id)
+      const pathname = window.location.pathname;
+      if (!articleId && pathname.includes('/article/')) {
+        const parts = pathname.split('/article/');
+        if (parts[1]) {
+          articleId = parts[1].replace(/\.html$/, '').replace(/\/$/, '');
+        }
+      }
+
+      // Check SPA redirect query (/?/article/some-id)
+      if (!articleId && window.location.search.startsWith('?/')) {
+        const cleanPath = window.location.search.substring(2);
+        if (cleanPath.includes('article/')) {
+          const parts = cleanPath.split('article/');
+          if (parts[1]) {
+            articleId = parts[1].split('&')[0].replace(/\.html$/, '').replace(/\/$/, '');
+          }
+        }
+      }
+
+      if (articleId && articles.length > 0) {
+        const found = articles.find((a) => a.id === articleId);
+        if (found) {
+          setSelectedArticle(found);
+          setCurrentView('detail');
+          return;
+        }
+      }
+
+      // Check category in URL
+      const catParam = urlParams.get('category');
+      if (catParam && CATEGORIES.some((c) => c.id === catParam)) {
+        setSelectedCategory(catParam as CategoryId);
+        setCurrentView('list');
+      }
+    };
+
+    parseUrlAndNavigate();
+    window.addEventListener('popstate', parseUrlAndNavigate);
+    return () => window.removeEventListener('popstate', parseUrlAndNavigate);
+  }, [articles]);
+
+  // Dynamic SEO & Document Title Updates
+  useEffect(() => {
+    if (currentView === 'detail' && selectedArticle) {
+      document.title = `${selectedArticle.title} | 莫忘舊聞`;
+      
+      const descMeta = document.querySelector('meta[name="description"]');
+      if (descMeta) {
+        descMeta.setAttribute('content', selectedArticle.excerpt || selectedArticle.title);
+      }
+
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) {
+        ogTitle.setAttribute('content', `${selectedArticle.title} | 莫忘舊聞`);
+      }
+
+      const ogDesc = document.querySelector('meta[property="og:description"]');
+      if (ogDesc) {
+        ogDesc.setAttribute('content', selectedArticle.excerpt || selectedArticle.title);
+      }
+
+      const canonical = document.querySelector('link[rel="canonical"]');
+      if (canonical) {
+        canonical.setAttribute('href', `https://mowang.com.tw/article/${selectedArticle.id}`);
+      }
+    } else {
+      document.title = '莫忘舊聞 | 沉澱時光記憶 · 解讀時代舊聞';
+      
+      const descMeta = document.querySelector('meta[name="description"]');
+      if (descMeta) {
+        descMeta.setAttribute('content', '莫忘舊聞 (mowang.com.tw) — 深度歷史檔案與時代舊聞典藏專題平台，沉澱時光記憶，解讀時代轉折與歷史回響。');
+      }
+
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) {
+        ogTitle.setAttribute('content', '莫忘舊聞 | 沉澱時光記憶 · 解讀時代舊聞');
+      }
+
+      const ogDesc = document.querySelector('meta[property="og:description"]');
+      if (ogDesc) {
+        ogDesc.setAttribute('content', '莫忘舊聞 — 深度歷史檔案與時代舊聞典藏專題平台，探尋被遺忘的新聞與時空記憶。');
+      }
+
+      const canonical = document.querySelector('link[rel="canonical"]');
+      if (canonical) {
+        canonical.setAttribute('href', 'https://mowang.com.tw/');
+      }
+    }
+  }, [currentView, selectedArticle]);
 
   // Save Bookmarks to LocalStorage
   const saveBookmarks = (newBookmarksList: string[]) => {
@@ -110,7 +210,7 @@ export function App() {
     incrementLikes(articleId);
   };
 
-  // Open Article Detail (syncs view increment to Firestore)
+  // Open Article Detail (syncs view increment to Firestore & updates URL)
   const handleSelectArticle = (article: Article) => {
     const updatedViews = (article.views || 0) + 1;
     setArticles((prev) =>
@@ -119,6 +219,26 @@ export function App() {
     setSelectedArticle({ ...article, views: updatedViews });
     incrementViews(article.id);
     setCurrentView('detail');
+
+    // Update URL history for deep linking
+    try {
+      window.history.pushState(null, '', `/article/${article.id}`);
+    } catch (e) {
+      // Fallback
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Back to home / list view
+  const handleBackToHome = () => {
+    setSelectedArticle(null);
+    setCurrentView('list');
+    try {
+      window.history.pushState(null, '', '/');
+    } catch (e) {
+      // Fallback
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -127,6 +247,10 @@ export function App() {
     setSelectedCategory(catId);
     if (currentView !== 'list') {
       setCurrentView('list');
+      setSelectedArticle(null);
+      try {
+        window.history.pushState(null, '', catId === 'all' ? '/' : `/?category=${catId}`);
+      } catch (e) {}
     }
   };
 
@@ -191,7 +315,7 @@ export function App() {
         bookmarkCount={bookmarks.length}
         onOpenBookmarks={() => setCurrentView('bookmarks')}
         onGoHome={() => {
-          setCurrentView('list');
+          handleBackToHome();
           setSelectedCategory('all');
           setSearchQuery('');
           setFilterFeatured(false);
@@ -205,7 +329,7 @@ export function App() {
         {currentView === 'detail' && selectedArticle ? (
           <ArticleDetailView
             article={selectedArticle}
-            onBack={() => setCurrentView('list')}
+            onBack={handleBackToHome}
             isBookmarked={bookmarks.includes(selectedArticle.id)}
             onToggleBookmark={(id) => handleToggleBookmark(id)}
             onLikeArticle={(id) => handleLikeArticle(id)}
@@ -219,7 +343,7 @@ export function App() {
             onSelectArticle={handleSelectArticle}
             onToggleBookmark={handleToggleBookmark}
             onClearAllBookmarks={handleClearAllBookmarks}
-            onBackToFeed={() => setCurrentView('list')}
+            onBackToFeed={handleBackToHome}
           />
         ) : (
           /* List / Feed View */

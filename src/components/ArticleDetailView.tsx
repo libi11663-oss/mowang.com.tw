@@ -22,6 +22,15 @@ import {
   ChevronLeft,
   ChevronRight,
   Sliders,
+  Copy,
+  ExternalLink,
+  BookOpen,
+  HelpCircle,
+  MapPin,
+  Calendar,
+  User,
+  ShieldCheck,
+  Sparkles,
 } from 'lucide-react';
 
 interface ArticleDetailViewProps {
@@ -55,8 +64,135 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
   const [readingProgress, setReadingProgress] = useState(0);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [citationCopied, setCitationCopied] = useState(false);
   const [likesCount, setLikesCount] = useState(article.likes || 0);
   const [hasLiked, setHasLiked] = useState(false);
+
+  // Dynamic JSON-LD (NewsArticle + FAQPage + BreadcrumbList) injection
+  useEffect(() => {
+    const siteUrl = 'https://mowang.com.tw';
+    const canonicalUrl = `${siteUrl}/article/${article.id}`;
+    const isoDate = `${article.createdAt.replace(/\//g, '-')}T08:00:00+08:00`;
+
+    // 1. NewsArticle Schema
+    const newsArticleSchema: Record<string, any> = {
+      '@context': 'https://schema.org',
+      '@type': 'NewsArticle',
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': canonicalUrl,
+      },
+      headline: article.title,
+      description: article.excerpt,
+      articleBody: article.content.slice(0, 3500),
+      image: article.coverImage || `${siteUrl}/favicon.ico`,
+      datePublished: isoDate,
+      dateModified: isoDate,
+      author: {
+        '@type': 'Person',
+        name: article.author.name,
+        jobTitle: article.author.title,
+      },
+      publisher: {
+        '@type': 'NewsMediaOrganization',
+        name: '莫忘舊聞',
+        url: siteUrl,
+        logo: {
+          '@type': 'ImageObject',
+          url: `${siteUrl}/favicon.ico`,
+        },
+      },
+      articleSection: article.categoryName,
+      keywords: (article.tags || []).join(', '),
+      speakable: {
+        '@type': 'SpeakableSpecification',
+        cssSelector: ['#article-summary', 'h1'],
+      },
+    };
+
+    // 2. FAQ Schema if FAQs present or parsed from headings
+    const faqItems = article.faqs || [];
+    let faqSchema: Record<string, any> | null = null;
+    if (faqItems.length > 0) {
+      faqSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqItems.map((faq) => ({
+          '@type': 'Question',
+          name: faq.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: faq.answer,
+          },
+        })),
+      };
+    }
+
+    // 3. BreadcrumbList Schema
+    const breadcrumbSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: '莫忘舊聞首頁',
+          item: siteUrl,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: article.categoryName,
+          item: `${siteUrl}/?category=${article.categoryId}`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: article.title,
+          item: canonicalUrl,
+        },
+      ],
+    };
+
+    // Create or update script tags in document head
+    const scriptId = 'geo-article-schema-ld';
+    let script = document.getElementById(scriptId) as HTMLScriptElement | null;
+    if (!script) {
+      script = document.createElement('script');
+      script.id = scriptId;
+      script.type = 'application/ld+json';
+      document.head.appendChild(script);
+    }
+    const combinedSchemas = faqSchema
+      ? [newsArticleSchema, faqSchema, breadcrumbSchema]
+      : [newsArticleSchema, breadcrumbSchema];
+    script.text = JSON.stringify(combinedSchemas, null, 2);
+
+    // Meta tags for Open Graph & Article specifications
+    const setMeta = (attr: string, key: string, content: string) => {
+      let el = document.querySelector(`meta[${attr}="${key}"]`);
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute(attr, key);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    };
+
+    setMeta('property', 'og:type', 'article');
+    setMeta('property', 'article:published_time', isoDate);
+    setMeta('property', 'article:modified_time', isoDate);
+    setMeta('property', 'article:section', article.categoryName);
+    setMeta('property', 'article:author', article.author.name);
+    if (article.tags && article.tags.length > 0) {
+      setMeta('property', 'article:tag', article.tags.join(','));
+    }
+
+    return () => {
+      const el = document.getElementById(scriptId);
+      if (el) el.remove();
+    };
+  }, [article]);
 
   // Scroll Progress listener
   useEffect(() => {
@@ -87,7 +223,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
       return;
     }
 
-    const textToRead = `${article.title}。${article.subtitle || ''}。${article.content}`;
+    const textToRead = `${article.title}。${article.subtitle || ''}。${article.excerpt}。${article.content}`;
     const utterance = new SpeechSynthesisUtterance(textToRead);
     utterance.lang = 'zh-TW';
     utterance.rate = 0.95;
@@ -120,16 +256,27 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
   // Share interaction
   const handleShare = () => {
     if (navigator.share) {
-      navigator.share({
-        title: article.title,
-        text: article.excerpt,
-        url: window.location.href,
-      }).catch(() => {});
+      navigator
+        .share({
+          title: article.title,
+          text: article.excerpt,
+          url: window.location.href,
+        })
+        .catch(() => {});
     } else {
       navigator.clipboard.writeText(window.location.href);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
+  };
+
+  // Citation copy handler
+  const handleCopyCitation = () => {
+    const pubYear = article.createdAt.split('/')[0] || new Date().getFullYear();
+    const citationText = `《莫忘舊聞》編輯部（${pubYear}）。〈${article.title}〉。檢索自 https://mowang.com.tw/article/${article.id}`;
+    navigator.clipboard.writeText(citationText);
+    setCitationCopied(true);
+    setTimeout(() => setCitationCopied(false), 2500);
   };
 
   // Related articles (same category or recent, excluding current)
@@ -397,10 +544,83 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
           </div>
         )}
 
-        {/* Lead Excerpt Callout */}
-        <div className={`p-6 rounded-2xl border mb-10 ${containerBgClasses[preferences.theme]} font-editorial-serif italic text-base sm:text-lg leading-relaxed shadow-2xs`}>
-          “ {article.excerpt} ”
-        </div>
+        {/* GEO 關鍵區塊 1: 5W1H 事件核心摘要 (TL;DR Fact-Oriented Summary) */}
+        <section
+          id="article-summary"
+          aria-label="專題核心摘要與 5W1H 事實速覽"
+          className="mb-10 p-6 rounded-2xl bg-gradient-to-br from-amber-50/90 via-stone-50/80 to-amber-100/40 border-2 border-amber-600/30 shadow-xs"
+        >
+          <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-amber-900/15">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-amber-700" />
+              <h2 className="font-editorial-serif text-lg sm:text-xl font-extrabold text-stone-900">
+                TL;DR 專題核心摘要 · 5W1H 事實查核
+              </h2>
+            </div>
+            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-200/80 text-amber-900">
+              GEO 認證事實封包
+            </span>
+          </div>
+
+          <p className="font-editorial-serif text-sm sm:text-base text-stone-800 leading-relaxed mb-5 italic border-l-3 border-amber-600 pl-3">
+            “ {article.excerpt} ”
+          </p>
+
+          {/* 5W1H Structured Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+            <div className="p-3 rounded-xl bg-white/80 border border-stone-200/80 flex items-start gap-2.5">
+              <Calendar className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-stone-900 block font-bold">時間 (When)：</strong>
+                <span className="text-stone-700">
+                  {article.facts5W1H?.when || article.createdAt}
+                </span>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-white/80 border border-stone-200/80 flex items-start gap-2.5">
+              <MapPin className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-stone-900 block font-bold">地點 (Where)：</strong>
+                <span className="text-stone-700">
+                  {article.facts5W1H?.where || article.location || '台灣'}
+                </span>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-white/80 border border-stone-200/80 flex items-start gap-2.5">
+              <User className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-stone-900 block font-bold">核心人物 (Who)：</strong>
+                <span className="text-stone-700">
+                  {article.facts5W1H?.who || article.author.name}
+                </span>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-white/80 border border-stone-200/80 flex items-start gap-2.5">
+              <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-stone-900 block font-bold">核心事件 (What)：</strong>
+                <span className="text-stone-700">
+                  {article.facts5W1H?.what || article.title}
+                </span>
+              </div>
+            </div>
+
+            {(article.facts5W1H?.why || article.facts5W1H?.impact) && (
+              <div className="sm:col-span-2 p-3 rounded-xl bg-white/80 border border-stone-200/80 flex items-start gap-2.5">
+                <BookOpen className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="text-stone-900 block font-bold">歷史回響與社會意義 (Why & Impact)：</strong>
+                  <span className="text-stone-700">
+                    {article.facts5W1H?.why} {article.facts5W1H?.impact}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
 
         {/* Body Text with Markdown & Table Support */}
         <article className={`${fontClasses[preferences.font]} ${fontSizeClasses[preferences.fontSize]} article-markdown-content`}>
@@ -466,9 +686,41 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
           </ReactMarkdown>
         </article>
 
+        {/* GEO 關鍵區塊 2: 常見問答與核心 FAQ (FAQPage 結構呈現) */}
+        {article.faqs && article.faqs.length > 0 && (
+          <section
+            id="faq"
+            aria-label="常見問答與核心事實解答"
+            className="mt-12 p-6 sm:p-8 rounded-2xl bg-stone-50 border border-stone-200"
+          >
+            <div className="flex items-center gap-2 mb-6 pb-3 border-b border-stone-200">
+              <HelpCircle className="w-5 h-5 text-amber-700" />
+              <h3 className="font-editorial-serif text-xl font-bold text-stone-900">
+                專題核心問答 · 關鍵事實解析
+              </h3>
+            </div>
+            <div className="space-y-4">
+              {article.faqs.map((faq, idx) => (
+                <div
+                  key={idx}
+                  className="p-4 rounded-xl bg-white border border-stone-200/90 shadow-2xs space-y-2"
+                >
+                  <h4 className="font-bold text-stone-900 text-sm sm:text-base flex items-start gap-2">
+                    <span className="text-amber-700 font-extrabold">Q{idx + 1}.</span>
+                    <span>{faq.question}</span>
+                  </h4>
+                  <p className="text-xs sm:text-sm text-stone-700 leading-relaxed pl-6 border-l-2 border-amber-400">
+                    {faq.answer}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Tags */}
         {article.tags && article.tags.length > 0 && (
-          <div className="mt-12 pt-6 border-t border-[#E7E5E4] flex flex-wrap items-center gap-2">
+          <div className="mt-10 pt-6 border-t border-[#E7E5E4] flex flex-wrap items-center gap-2">
             <span className="text-xs font-bold text-stone-500">專題標籤：</span>
             {article.tags.map((tag, idx) => (
               <span
@@ -480,6 +732,72 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
             ))}
           </div>
         )}
+
+        {/* GEO 關鍵區塊 3: 參考資料與出處列表 (Citable Sources & References) */}
+        <section
+          id="sources"
+          aria-label="參考資料與官方報導引述出處"
+          className="mt-10 p-6 rounded-2xl bg-stone-100/80 border border-stone-300/80 text-xs text-stone-700"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-stone-200">
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-amber-700" />
+              <h4 className="font-bold text-sm text-stone-900">參考資料與引述出處 (Citable Sources)</h4>
+            </div>
+            <button
+              onClick={handleCopyCitation}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-stone-300 hover:border-amber-600 text-stone-700 hover:text-amber-800 text-xs font-medium transition-all cursor-pointer shadow-2xs"
+            >
+              {citationCopied ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="text-emerald-700 font-bold">已複製學術/報導引用格式</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>複製引用格式 (Cite)</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          <ol className="list-decimal list-inside space-y-2 font-mono text-stone-600">
+            {article.sources && article.sources.length > 0 ? (
+              article.sources.map((src, idx) => (
+                <li key={idx} className="leading-relaxed">
+                  <cite className="not-italic font-sans text-stone-800 font-semibold">{src.title}</cite>
+                  {src.publisher && <span className="text-stone-500 font-sans"> · 出處：{src.publisher}</span>}
+                  {src.date && <span className="text-stone-400 font-sans"> ({src.date})</span>}
+                  {src.url && (
+                    <a
+                      href={src.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-2 text-amber-700 hover:underline inline-flex items-center gap-0.5"
+                    >
+                      <span>原文</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+                </li>
+              ))
+            ) : (
+              <>
+                <li className="leading-relaxed">
+                  <cite className="not-italic font-sans text-stone-800 font-semibold">
+                    《莫忘舊聞》社會焦點檔案庫 · 典藏專題篇章（{article.createdAt}）
+                  </cite>
+                </li>
+                <li className="leading-relaxed">
+                  <cite className="not-italic font-sans text-stone-800 font-semibold">
+                    主流新聞通訊社、地方政府公報與公開歷史報導綜合彙整
+                  </cite>
+                </li>
+              </>
+            )}
+          </ol>
+        </section>
 
         {/* Bottom Pagination (Prev / Next Article) */}
         <div className="mt-12 pt-8 border-t border-[#E7E5E4] grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -552,3 +870,4 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
     </div>
   );
 };
+

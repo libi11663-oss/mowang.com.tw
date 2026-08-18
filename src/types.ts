@@ -32,6 +32,27 @@ export interface Author {
   title: string;
 }
 
+export interface Facts5W1H {
+  when?: string;
+  where?: string;
+  who?: string;
+  what?: string;
+  why?: string;
+  impact?: string;
+}
+
+export interface ArticleSource {
+  title: string;
+  url?: string;
+  publisher?: string;
+  date?: string;
+}
+
+export interface ArticleFAQ {
+  question: string;
+  answer: string;
+}
+
 export interface Article {
   id: string;
   title: string;
@@ -49,6 +70,9 @@ export interface Article {
   tags: string[];
   coverImage?: string;
   location?: string;
+  facts5W1H?: Facts5W1H;
+  sources?: ArticleSource[];
+  faqs?: ArticleFAQ[];
 }
 
 export type ViewMode = 'list' | 'detail' | 'bookmarks';
