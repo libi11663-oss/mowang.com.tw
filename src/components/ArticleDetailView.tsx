@@ -106,7 +106,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
       keywords: (article.tags || []).join(', '),
       speakable: {
         '@type': 'SpeakableSpecification',
-        cssSelector: ['#article-summary', 'h1'],
+        cssSelector: ['h1', '.article-markdown-content'],
       },
     };
 
@@ -543,84 +543,6 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
             </div>
           </div>
         )}
-
-        {/* GEO 關鍵區塊 1: 5W1H 事件核心摘要 (TL;DR Fact-Oriented Summary) */}
-        <section
-          id="article-summary"
-          aria-label="專題核心摘要與 5W1H 事實速覽"
-          className="mb-10 p-6 rounded-2xl bg-gradient-to-br from-amber-50/90 via-stone-50/80 to-amber-100/40 border-2 border-amber-600/30 shadow-xs"
-        >
-          <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-amber-900/15">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-700" />
-              <h2 className="font-editorial-serif text-lg sm:text-xl font-extrabold text-stone-900">
-                TL;DR 專題核心摘要 · 5W1H 事實查核
-              </h2>
-            </div>
-            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-200/80 text-amber-900">
-              GEO 認證事實封包
-            </span>
-          </div>
-
-          <p className="font-editorial-serif text-sm sm:text-base text-stone-800 leading-relaxed mb-5 italic border-l-3 border-amber-600 pl-3">
-            “ {article.excerpt} ”
-          </p>
-
-          {/* 5W1H Structured Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
-            <div className="p-3 rounded-xl bg-white/80 border border-stone-200/80 flex items-start gap-2.5">
-              <Calendar className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-              <div>
-                <strong className="text-stone-900 block font-bold">時間 (When)：</strong>
-                <span className="text-stone-700">
-                  {article.facts5W1H?.when || article.createdAt}
-                </span>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-xl bg-white/80 border border-stone-200/80 flex items-start gap-2.5">
-              <MapPin className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-              <div>
-                <strong className="text-stone-900 block font-bold">地點 (Where)：</strong>
-                <span className="text-stone-700">
-                  {article.facts5W1H?.where || article.location || '台灣'}
-                </span>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-xl bg-white/80 border border-stone-200/80 flex items-start gap-2.5">
-              <User className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-              <div>
-                <strong className="text-stone-900 block font-bold">核心人物 (Who)：</strong>
-                <span className="text-stone-700">
-                  {article.facts5W1H?.who || article.author.name}
-                </span>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-xl bg-white/80 border border-stone-200/80 flex items-start gap-2.5">
-              <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-              <div>
-                <strong className="text-stone-900 block font-bold">核心事件 (What)：</strong>
-                <span className="text-stone-700">
-                  {article.facts5W1H?.what || article.title}
-                </span>
-              </div>
-            </div>
-
-            {(article.facts5W1H?.why || article.facts5W1H?.impact) && (
-              <div className="sm:col-span-2 p-3 rounded-xl bg-white/80 border border-stone-200/80 flex items-start gap-2.5">
-                <BookOpen className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-stone-900 block font-bold">歷史回響與社會意義 (Why & Impact)：</strong>
-                  <span className="text-stone-700">
-                    {article.facts5W1H?.why} {article.facts5W1H?.impact}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-        </section>
 
         {/* Body Text with Markdown & Table Support */}
         <article className={`${fontClasses[preferences.font]} ${fontSizeClasses[preferences.fontSize]} article-markdown-content`}>

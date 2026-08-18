@@ -208,27 +208,6 @@ export function renderArticleHtml(article: Article, templateHtml?: string): stri
       </div>
     </header>
 
-    <!-- GEO Optimized: 5W1H Structured Facts Box -->
-    ${article.facts5W1H ? `
-    <section id="facts-5w1h" class="my-8 p-6 bg-amber-50/70 border-l-4 border-amber-600 rounded-r-xl">
-      <h2 class="text-lg font-bold text-amber-950 font-serif mb-4 flex items-center gap-2">
-        <span>📌 5W1H 關鍵事實摘要 (Executive Fact Sheet)</span>
-      </h2>
-      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-        ${article.facts5W1H.who ? `<div><dt class="font-bold text-stone-900">人物 (Who):</dt><dd class="text-stone-700 mt-0.5">${article.facts5W1H.who}</dd></div>` : ''}
-        ${article.facts5W1H.what ? `<div><dt class="font-bold text-stone-900">核心事件 (What):</dt><dd class="text-stone-700 mt-0.5">${article.facts5W1H.what}</dd></div>` : ''}
-        ${article.facts5W1H.when ? `<div><dt class="font-bold text-stone-900">發生時間 (When):</dt><dd class="text-stone-700 mt-0.5">${article.facts5W1H.when}</dd></div>` : ''}
-        ${article.facts5W1H.where ? `<div><dt class="font-bold text-stone-900">地點 (Where):</dt><dd class="text-stone-700 mt-0.5">${article.facts5W1H.where}</dd></div>` : ''}
-        ${article.facts5W1H.why ? `<div class="sm:col-span-2"><dt class="font-bold text-stone-900">起因與背景 (Why):</dt><dd class="text-stone-700 mt-0.5">${article.facts5W1H.why}</dd></div>` : ''}
-        ${article.facts5W1H.how ? `<div class="sm:col-span-2"><dt class="font-bold text-stone-900">後續影響 (How):</dt><dd class="text-stone-700 mt-0.5">${article.facts5W1H.how}</dd></div>` : ''}
-      </dl>
-    </section>
-    ` : `
-    <section id="article-summary" class="my-6 p-4 bg-stone-50 border border-stone-200 rounded-lg text-sm text-stone-700 italic">
-      <strong>專題速讀：</strong>${plainExcerpt}
-    </section>
-    `}
-
     <!-- Cover Image -->
     ${article.coverImage ? `
     <div class="my-8">
