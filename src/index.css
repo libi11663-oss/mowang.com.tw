@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-serif: 'Noto Serif TC', 'Playfair Display', Georgia, serif;
+    --font-sans: 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+    --font-display: 'Cinzel', 'Noto Serif TC', serif;
+  }
+
+  body {
+    background-color: #F5F2ED;
+    color: #1C1917;
+    font-family: var(--font-sans);
+  }
+}
+
+.font-editorial-serif {
+  font-family: 'Noto Serif TC', 'Playfair Display', Georgia, serif;
+}
+
+.font-editorial-sans {
+  font-family: 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+}
+
+.font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F5F2ED;
+}
+::-webkit-scrollbar-thumb {
+  background: #D6D3D1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #A8A29E;
+}
+
+/* Geometric Balance grid & archival texture overlay */
+.bg-archive-texture {
+  background-image: radial-gradient(rgba(217, 119, 6, 0.08) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.bg-geometric-grid {
+  background-image: linear-gradient(to right, rgba(28, 25, 23, 0.03) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(28, 25, 23, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.drop-cap:first-letter {
+  font-size: 3.5rem;
+  line-height: 0.85;
+  padding-top: 4px;
+  padding-right: 12px;
+  padding-bottom: 2px;
+  float: left;
+  font-family: 'Noto Serif TC', serif;
+  font-weight: 700;
+  color: #D97706;
+}
+
+

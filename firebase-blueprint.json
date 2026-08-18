@@ -1,0 +1,53 @@
+{
+  "entities": {
+    "Article": {
+      "title": "Article",
+      "description": "Historical news, social events and deep feature articles",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the article" },
+        "subtitle": { "type": "string", "description": "Subtitle or summary line" },
+        "excerpt": { "type": "string", "description": "Brief excerpt" },
+        "content": { "type": "string", "description": "Full markdown or text content" },
+        "categoryId": { "type": "string", "description": "Category identifier" },
+        "categoryName": { "type": "string", "description": "Category human readable name" },
+        "author": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "avatar": { "type": "string" },
+            "title": { "type": "string" }
+          },
+          "required": ["name"]
+        },
+        "createdAt": { "type": "string", "description": "Creation date formatted string" },
+        "readTimeMinutes": { "type": "number", "description": "Estimated read time in minutes" },
+        "views": { "type": "number", "description": "View counter" },
+        "likes": { "type": "number", "description": "Likes counter" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "coverImage": { "type": "string", "description": "Cover image URL" }
+      },
+      "required": ["title", "content", "categoryId", "categoryName", "createdAt"]
+    },
+    "NewsletterSubscriber": {
+      "title": "NewsletterSubscriber",
+      "description": "Weekly newsletter email subscriber",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["email"]
+    }
+  },
+  "firestore": {
+    "/articles/{articleId}": {
+      "entity": "Article",
+      "description": "Public archive articles"
+    },
+    "/newsletter_subscribers/{subscriberId}": {
+      "entity": "NewsletterSubscriber",
+      "description": "Newsletter subscriptions"
+    }
+  }
+}

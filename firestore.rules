@@ -1,0 +1,16 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Articles collection: allow public read and allow updates (likes, views, creation)
+    match /articles/{articleId} {
+      allow read, write: if true;
+    }
+
+    // Newsletter subscribers
+    match /newsletter_subscribers/{subscriberId} {
+      allow create: if true;
+      allow read: if true;
+    }
+  }
+}

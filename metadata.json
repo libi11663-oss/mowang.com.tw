@@ -1,0 +1,6 @@
+{
+  "name": "莫忘舊聞",
+  "description": "莫忘舊聞 — 複習舊聞-挖掘深處記憶。在大數據時代下幫助人們複習該被記住的重大事情。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
