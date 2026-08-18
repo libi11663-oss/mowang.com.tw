@@ -25,7 +25,41 @@
         "views": { "type": "number", "description": "View counter" },
         "likes": { "type": "number", "description": "Likes counter" },
         "tags": { "type": "array", "items": { "type": "string" } },
-        "coverImage": { "type": "string", "description": "Cover image URL" }
+        "coverImage": { "type": "string", "description": "Cover image URL" },
+        "location": { "type": "string", "description": "Geographical location or city" },
+        "facts5W1H": {
+          "type": "object",
+          "properties": {
+            "who": { "type": "string" },
+            "what": { "type": "string" },
+            "when": { "type": "string" },
+            "where": { "type": "string" },
+            "why": { "type": "string" },
+            "how": { "type": "string" }
+          }
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "url": { "type": "string" },
+              "sourceName": { "type": "string" },
+              "date": { "type": "string" }
+            }
+          }
+        },
+        "faqs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "question": { "type": "string" },
+              "answer": { "type": "string" }
+            }
+          }
+        }
       },
       "required": ["title", "content", "categoryId", "categoryName", "createdAt"]
     },

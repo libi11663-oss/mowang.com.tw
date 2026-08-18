@@ -70,6 +70,9 @@ export async function fetchArticles(): Promise<Article[]> {
         tags: Array.isArray(data.tags) ? data.tags : [],
         coverImage: data.coverImage || '',
         location: data.location || '',
+        facts5W1H: data.facts5W1H || undefined,
+        sources: Array.isArray(data.sources) ? data.sources : undefined,
+        faqs: Array.isArray(data.faqs) ? data.faqs : undefined,
       });
     });
     return articles;
@@ -115,6 +118,9 @@ export function subscribeToArticles(
             tags: Array.isArray(data.tags) ? data.tags : [],
             coverImage: data.coverImage || '',
             location: data.location || '',
+            facts5W1H: data.facts5W1H || undefined,
+            sources: Array.isArray(data.sources) ? data.sources : undefined,
+            faqs: Array.isArray(data.faqs) ? data.faqs : undefined,
           });
         });
         onUpdate(list);
@@ -156,6 +162,9 @@ export async function saveArticle(article: Partial<Article> & { title: string; c
     tags: article.tags || [],
     coverImage: article.coverImage || '',
     location: article.location || '',
+    facts5W1H: article.facts5W1H || null,
+    sources: article.sources || null,
+    faqs: article.faqs || null,
   };
 
   await setDoc(docRef, payload, { merge: true });

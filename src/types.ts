@@ -38,6 +38,7 @@ export interface Facts5W1H {
   who?: string;
   what?: string;
   why?: string;
+  how?: string;
   impact?: string;
 }
 
@@ -45,6 +46,7 @@ export interface ArticleSource {
   title: string;
   url?: string;
   publisher?: string;
+  sourceName?: string;
   date?: string;
 }
 

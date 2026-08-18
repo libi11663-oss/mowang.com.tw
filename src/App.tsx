@@ -6,19 +6,24 @@ import { ArticleCard } from './components/ArticleCard';
 import { ArticleDetailView } from './components/ArticleDetailView';
 import { BookmarksView } from './components/BookmarksView';
 import { NewsletterBox } from './components/NewsletterBox';
+import { PublishModal } from './components/PublishModal';
 import { Article, CategoryId, ViewMode, CATEGORIES } from './types';
 import { INITIAL_DEMO_ARTICLES } from './data/mockArticles';
 import { subscribeToArticles, incrementViews, incrementLikes } from './lib/firebase';
 import { Sparkles, Clock, Flame, Heart, Star, Layers } from 'lucide-react';
 
-const STORAGE_KEY = 'mowang_articles_clean_v2';
-const BOOKMARKS_STORAGE_KEY = 'mowang_bookmarks_clean_v2';
+const STORAGE_KEY = 'mowang_articles_prod_v3';
+const BOOKMARKS_STORAGE_KEY = 'mowang_bookmarks_clean_v3';
 
 export function App() {
   // Articles state initialized from LocalStorage or INITIAL_DEMO_ARTICLES
   const [articles, setArticles] = useState<Article[]>(() => {
     try {
+      // Clean up any legacy test cache keys
       localStorage.removeItem('mowang_articles_v1');
+      localStorage.removeItem('mowang_articles_clean_v1');
+      localStorage.removeItem('mowang_articles_clean_v2');
+      localStorage.removeItem('mowang_articles_demo');
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
@@ -35,7 +40,7 @@ export function App() {
   // Real-time Firestore synchronization for articles
   useEffect(() => {
     const unsubscribe = subscribeToArticles((firestoreArticles) => {
-      if (firestoreArticles.length > 0) {
+      if (firestoreArticles && firestoreArticles.length > 0) {
         setArticles(firestoreArticles);
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(firestoreArticles));
@@ -74,6 +79,7 @@ export function App() {
   const [sortBy, setSortBy] = useState<'newest' | 'hot' | 'likes'>('newest');
   const [filterFeatured, setFilterFeatured] = useState<boolean>(false);
   const [filterLongRead, setFilterLongRead] = useState<boolean>(false);
+  const [isPublishModalOpen, setIsPublishModalOpen] = useState<boolean>(false);
 
   // Handle URL deep linking on initial load and popstate
   useEffect(() => {
@@ -125,52 +131,208 @@ export function App() {
 
   // Dynamic SEO & Document Title Updates
   useEffect(() => {
+    // Helper to safely set/update meta tag
+    const setMeta = (selector: string, attr: string, value: string) => {
+      let el = document.querySelector(selector);
+      if (!el) {
+        el = document.createElement('meta');
+        if (selector.startsWith('meta[name=')) {
+          const nameMatch = selector.match(/name="([^"]+)"/);
+          if (nameMatch) el.setAttribute('name', nameMatch[1]);
+        } else if (selector.startsWith('meta[property=')) {
+          const propMatch = selector.match(/property="([^"]+)"/);
+          if (propMatch) el.setAttribute('property', propMatch[1]);
+        }
+        document.head.appendChild(el);
+      }
+      el.setAttribute(attr, value);
+    };
+
+    const setCanonical = (href: string) => {
+      let el = document.querySelector('link[rel="canonical"]');
+      if (!el) {
+        el = document.createElement('link');
+        el.setAttribute('rel', 'canonical');
+        document.head.appendChild(el);
+      }
+      el.setAttribute('href', href);
+    };
+
+    const setJsonLd = (schema: object) => {
+      let el = document.getElementById('dynamic-jsonld') as HTMLScriptElement | null;
+      if (!el) {
+        el = document.createElement('script');
+        el.id = 'dynamic-jsonld';
+        el.type = 'application/ld+json';
+        document.head.appendChild(el);
+      }
+      el.textContent = JSON.stringify(schema);
+    };
+
     if (currentView === 'detail' && selectedArticle) {
       document.title = `${selectedArticle.title} | 莫忘舊聞`;
       
-      const descMeta = document.querySelector('meta[name="description"]');
-      if (descMeta) {
-        descMeta.setAttribute('content', selectedArticle.excerpt || selectedArticle.title);
-      }
+      const excerpt = selectedArticle.excerpt || selectedArticle.title;
+      const canonicalUrl = `https://mowang.com.tw/article/${selectedArticle.id}`;
+      const coverImg = selectedArticle.coverImage || 'https://mowang.com.tw/favicon.ico';
+      const isoDate = `${selectedArticle.createdAt.replace(/\//g, '-')}T08:00:00+08:00`;
 
-      const ogTitle = document.querySelector('meta[property="og:title"]');
-      if (ogTitle) {
-        ogTitle.setAttribute('content', `${selectedArticle.title} | 莫忘舊聞`);
-      }
+      setMeta('meta[name="description"]', 'content', excerpt);
+      setMeta('meta[name="keywords"]', 'content', `${(selectedArticle.tags || []).join(', ')}, 莫忘舊聞, 時代舊聞, 專題報導`);
+      
+      // Open Graph
+      setMeta('meta[property="og:title"]', 'content', `${selectedArticle.title} | 莫忘舊聞`);
+      setMeta('meta[property="og:description"]', 'content', excerpt);
+      setMeta('meta[property="og:type"]', 'content', 'article');
+      setMeta('meta[property="og:url"]', 'content', canonicalUrl);
+      setMeta('meta[property="og:image"]', 'content', coverImg);
+      setMeta('meta[property="article:published_time"]', 'content', isoDate);
+      setMeta('meta[property="article:modified_time"]', 'content', isoDate);
+      setMeta('meta[property="article:section"]', 'content', selectedArticle.categoryName);
+      setMeta('meta[property="article:author"]', 'content', selectedArticle.author.name);
 
-      const ogDesc = document.querySelector('meta[property="og:description"]');
-      if (ogDesc) {
-        ogDesc.setAttribute('content', selectedArticle.excerpt || selectedArticle.title);
-      }
+      // Twitter
+      setMeta('meta[name="twitter:card"]', 'content', 'summary_large_image');
+      setMeta('meta[name="twitter:title"]', 'content', `${selectedArticle.title} | 莫忘舊聞`);
+      setMeta('meta[name="twitter:description"]', 'content', excerpt);
+      setMeta('meta[name="twitter:image"]', 'content', coverImg);
 
-      const canonical = document.querySelector('link[rel="canonical"]');
-      if (canonical) {
-        canonical.setAttribute('href', `https://mowang.com.tw/article/${selectedArticle.id}`);
-      }
+      setCanonical(canonicalUrl);
+
+      // Dynamic JSON-LD for single article
+      const newsArticleSchema: Record<string, any> = {
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": canonicalUrl
+        },
+        "headline": selectedArticle.title,
+        "description": excerpt,
+        "articleBody": selectedArticle.content.slice(0, 3500),
+        "image": coverImg,
+        "datePublished": isoDate,
+        "dateModified": isoDate,
+        "author": {
+          "@type": "Person",
+          "name": selectedArticle.author.name,
+          "jobTitle": selectedArticle.author.title
+        },
+        "publisher": {
+          "@type": "NewsMediaOrganization",
+          "name": "莫忘舊聞",
+          "url": "https://mowang.com.tw",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://mowang.com.tw/favicon.ico"
+          }
+        },
+        "articleSection": selectedArticle.categoryName,
+        "keywords": (selectedArticle.tags || []).join(', '),
+        "speakable": {
+          "@type": "SpeakableSpecification",
+          "cssSelector": ["#article-summary", "h1"]
+        }
+      };
+
+      const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "莫忘舊聞首頁",
+            "item": "https://mowang.com.tw/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": selectedArticle.categoryName,
+            "item": `https://mowang.com.tw/?category=${selectedArticle.categoryId}`
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": selectedArticle.title,
+            "item": canonicalUrl
+          }
+        ]
+      };
+
+      const schemasToInject = selectedArticle.faqs && selectedArticle.faqs.length > 0
+        ? [
+            newsArticleSchema,
+            {
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": selectedArticle.faqs.map(faq => ({
+                "@type": "Question",
+                "name": faq.question,
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": faq.answer
+                }
+              }))
+            },
+            breadcrumbSchema
+          ]
+        : [newsArticleSchema, breadcrumbSchema];
+
+      setJsonLd(schemasToInject);
     } else {
       document.title = '莫忘舊聞 | 沉澱時光記憶 · 解讀時代舊聞';
       
-      const descMeta = document.querySelector('meta[name="description"]');
-      if (descMeta) {
-        descMeta.setAttribute('content', '莫忘舊聞 (mowang.com.tw) — 深度歷史檔案與時代舊聞典藏專題平台，沉澱時光記憶，解讀時代轉折與歷史回響。');
-      }
+      const defaultDesc = '莫忘舊聞 (mowang.com.tw) — 深度歷史檔案與時代舊聞典藏專題平台，沉澱時光記憶，解讀時代轉折與歷史回響。';
+      
+      setMeta('meta[name="description"]', 'content', defaultDesc);
+      setMeta('meta[name="keywords"]', 'content', '莫忘舊聞, 莫忘, 時代舊聞, 歷史專題, 社會事件, 男女議題, 歷史檔案, mowang, mowang.com.tw');
+      setMeta('meta[property="og:title"]', 'content', '莫忘舊聞 | 沉澱時光記憶 · 解讀時代舊聞');
+      setMeta('meta[property="og:description"]', 'content', defaultDesc);
+      setMeta('meta[property="og:type"]', 'content', 'website');
+      setMeta('meta[property="og:url"]', 'content', 'https://mowang.com.tw/');
+      setMeta('meta[name="twitter:card"]', 'content', 'summary_large_image');
+      setMeta('meta[name="twitter:title"]', 'content', '莫忘舊聞 | 沉澱時光記憶 · 解讀時代舊聞');
+      setMeta('meta[name="twitter:description"]', 'content', defaultDesc);
 
-      const ogTitle = document.querySelector('meta[property="og:title"]');
-      if (ogTitle) {
-        ogTitle.setAttribute('content', '莫忘舊聞 | 沉澱時光記憶 · 解讀時代舊聞');
-      }
+      setCanonical('https://mowang.com.tw/');
 
-      const ogDesc = document.querySelector('meta[property="og:description"]');
-      if (ogDesc) {
-        ogDesc.setAttribute('content', '莫忘舊聞 — 深度歷史檔案與時代舊聞典藏專題平台，探尋被遺忘的新聞與時空記憶。');
-      }
-
-      const canonical = document.querySelector('link[rel="canonical"]');
-      if (canonical) {
-        canonical.setAttribute('href', 'https://mowang.com.tw/');
-      }
+      // Homepage ItemList JSON-LD
+      const homeSchema = {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://mowang.com.tw/#website",
+            "url": "https://mowang.com.tw/",
+            "name": "莫忘舊聞",
+            "description": defaultDesc,
+            "inLanguage": "zh-TW"
+          },
+          {
+            "@type": "NewsMediaOrganization",
+            "@id": "https://mowang.com.tw/#organization",
+            "name": "莫忘舊聞",
+            "url": "https://mowang.com.tw/",
+            "logo": "https://mowang.com.tw/favicon.ico",
+            "description": defaultDesc
+          },
+          {
+            "@type": "ItemList",
+            "name": "莫忘舊聞專題列表",
+            "itemListElement": articles.map((art, idx) => ({
+              "@type": "ListItem",
+              "position": idx + 1,
+              "name": art.title,
+              "description": art.excerpt,
+              "url": `https://mowang.com.tw/article/${art.id}`
+            }))
+          }
+        ]
+      };
+      setJsonLd(homeSchema);
     }
-  }, [currentView, selectedArticle]);
+  }, [currentView, selectedArticle, articles]);
 
   // Save Bookmarks to LocalStorage
   const saveBookmarks = (newBookmarksList: string[]) => {
@@ -314,6 +476,7 @@ export function App() {
         onSearchChange={setSearchQuery}
         bookmarkCount={bookmarks.length}
         onOpenBookmarks={() => setCurrentView('bookmarks')}
+        onOpenPublish={() => setIsPublishModalOpen(true)}
         onGoHome={() => {
           handleBackToHome();
           setSelectedCategory('all');
@@ -550,6 +713,19 @@ export function App() {
 
       {/* Dark Footer */}
       <Footer onSelectCategory={handleSelectCategory} />
+
+      {/* Admin / AI Publish Modal */}
+      <PublishModal
+        isOpen={isPublishModalOpen}
+        onClose={() => setIsPublishModalOpen(false)}
+        onSuccess={(newArticleId) => {
+          setIsPublishModalOpen(false);
+          const found = articles.find((a) => a.id === newArticleId);
+          if (found) {
+            handleSelectArticle(found);
+          }
+        }}
+      />
     </div>
   );
 }
