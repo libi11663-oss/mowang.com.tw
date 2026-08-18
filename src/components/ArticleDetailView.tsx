@@ -7,7 +7,6 @@ import {
   ReaderFont,
   ReaderFontSize,
   ReaderPreferences,
-  CommentItem,
 } from '../types';
 import {
   ArrowLeft,
@@ -19,8 +18,6 @@ import {
   Type,
   Volume2,
   VolumeX,
-  MessageSquare,
-  Send,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -60,21 +57,6 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
   const [copied, setCopied] = useState(false);
   const [likesCount, setLikesCount] = useState(article.likes || 0);
   const [hasLiked, setHasLiked] = useState(false);
-
-  // Comments state
-  const [comments, setComments] = useState<CommentItem[]>([
-    {
-      id: 'c-1',
-      articleId: article.id,
-      author: '讀史省思者',
-      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=reader1',
-      date: '剛剛',
-      content: '這篇專題寫得非常深刻，將當時的背景與今日的脈絡串聯得十分清晰！莫忘舊聞確實需要更多這類有分量的篇章。',
-      likes: 4,
-    },
-  ]);
-  const [newCommentText, setNewCommentText] = useState('');
-  const [newCommentAuthor, setNewCommentAuthor] = useState('');
 
   // Scroll Progress listener
   useEffect(() => {
@@ -148,27 +130,6 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
-  };
-
-  // Add Comment
-  const handleAddComment = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newCommentText.trim()) return;
-
-    const newComment: CommentItem = {
-      id: 'c-' + Date.now(),
-      articleId: article.id,
-      author: newCommentAuthor.trim() || '匿名讀者',
-      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(
-        newCommentAuthor || 'guest'
-      )}`,
-      date: '剛剛',
-      content: newCommentText.trim(),
-      likes: 0,
-    };
-
-    setComments([newComment, ...comments]);
-    setNewCommentText('');
   };
 
   // Related articles (same category or recent, excluding current)
@@ -556,67 +517,6 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
             </button>
           )}
         </div>
-
-        {/* Reader Comments Section */}
-        <section className="mt-16 pt-10 border-t border-[#E7E5E4] space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="font-editorial-serif text-xl font-bold flex items-center gap-2 text-[#1C1917]">
-              <MessageSquare className="w-5 h-5 text-amber-600" />
-              <span>讀者思潮迴響 ({comments.length})</span>
-            </h3>
-          </div>
-
-          {/* Comment Form */}
-          <form onSubmit={handleAddComment} className="p-5 rounded-2xl bg-white border border-[#E7E5E4] space-y-3 shadow-xs">
-            <input
-              type="text"
-              placeholder="您的稱呼（例如：文史同好）"
-              value={newCommentAuthor}
-              onChange={(e) => setNewCommentAuthor(e.target.value)}
-              className="w-full px-3.5 py-2 rounded-xl bg-[#F9F7F2] border border-[#E7E5E4] text-xs sm:text-sm text-[#1C1917] focus:outline-none focus:ring-2 focus:ring-amber-500/40"
-            />
-            <textarea
-              required
-              rows={3}
-              placeholder="留下您對這篇舊聞的見解或記憶微光..."
-              value={newCommentText}
-              onChange={(e) => setNewCommentText(e.target.value)}
-              className="w-full p-3.5 rounded-xl bg-[#F9F7F2] border border-[#E7E5E4] text-xs sm:text-sm text-[#1C1917] focus:outline-none focus:ring-2 focus:ring-amber-500/40 font-editorial-serif"
-            />
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold px-4 py-2 rounded-xl text-xs shadow-xs hover:shadow-md transition-all active:scale-95 cursor-pointer"
-              >
-                <Send className="w-3.5 h-3.5" />
-                <span>發表迴響</span>
-              </button>
-            </div>
-          </form>
-
-          {/* Comments List */}
-          <div className="space-y-3">
-            {comments.map((comment) => (
-              <div
-                key={comment.id}
-                className="p-4 rounded-xl bg-white border border-[#E7E5E4] space-y-2 text-xs sm:text-sm"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center font-bold text-amber-900 text-[10px]">
-                      {comment.author.slice(0, 1)}
-                    </div>
-                    <span className="font-bold text-[#1C1917]">{comment.author}</span>
-                  </div>
-                  <span className="text-[11px] text-stone-400">{comment.date}</span>
-                </div>
-                <p className="text-stone-700 font-editorial-serif leading-relaxed pl-8">
-                  {comment.content}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
 
         {/* Related Articles */}
         {relatedArticles.length > 0 && (
