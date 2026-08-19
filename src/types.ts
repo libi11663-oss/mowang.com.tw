@@ -80,14 +80,16 @@ export interface Article {
 export type ViewMode = 'list' | 'detail' | 'bookmarks';
 
 export type ReaderTheme = 'paper' | 'light' | 'dark' | 'sepia';
-export type ReaderFont = 'serif' | 'sans';
-export type ReaderFontSize = 'sm' | 'md' | 'lg' | 'xl';
+export type ReaderFont = 'serif' | 'sans' | 'display' | 'kai';
+export type ReaderFontSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+export type ReaderAccentColor = 'amber' | 'crimson' | 'emerald' | 'indigo' | 'slate';
 
 export interface ReaderPreferences {
   theme: ReaderTheme;
   font: ReaderFont;
   fontSize: ReaderFontSize;
   lineSpacing: 'normal' | 'relaxed';
+  accentColor: ReaderAccentColor;
 }
 
 export interface CommentItem {

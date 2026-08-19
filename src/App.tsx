@@ -231,7 +231,7 @@ export function App() {
         "keywords": (selectedArticle.tags || []).join(', '),
         "speakable": {
           "@type": "SpeakableSpecification",
-          "cssSelector": ["#article-summary", "h1"]
+          "cssSelector": ["h1", "article"]
         }
       };
 

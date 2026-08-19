@@ -98,19 +98,6 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               )}
             </button>
-
-            {/* AI Auto-Publish / Admin Publish Button */}
-            {onOpenPublish && (
-              <button
-                onClick={onOpenPublish}
-                className="flex items-center gap-1.5 px-3.5 py-2.5 bg-amber-500 hover:bg-amber-600 text-stone-950 text-xs sm:text-sm font-bold transition-all cursor-pointer border border-amber-600 shadow-2xs shrink-0"
-                title="發表專題文章與 AI 自動發文 API"
-              >
-                <Bot className="w-4 h-4 text-stone-950" />
-                <span className="hidden sm:inline">發布專題</span>
-                <span className="text-[10px] bg-stone-950 text-amber-400 px-1 py-0.2 rounded-xs font-mono font-bold">API</span>
-              </button>
-            )}
           </div>
         </div>
       </div>
