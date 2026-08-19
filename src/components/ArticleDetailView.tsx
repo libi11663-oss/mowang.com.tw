@@ -429,19 +429,62 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
       ? allArticles[currentIndex + 1]
       : null;
 
-  // Theme styling map
-  const themeClasses: Record<ReaderTheme, string> = {
-    paper: 'bg-[#F9F7F2] text-[#1C1917]',
-    light: 'bg-[#FFFFFF] text-[#1C1917]',
-    sepia: 'bg-[#F4ECD8] text-[#332A1C]',
-    dark: 'bg-[#1C1917] text-stone-200',
-  };
-
-  const containerBgClasses: Record<ReaderTheme, string> = {
-    paper: 'bg-white border-[#E7E5E4]',
-    light: 'bg-stone-50/70 border-stone-200',
-    sepia: 'bg-[#ECE2C6] border-[#D9CDB0]',
-    dark: 'bg-[#292524] border-stone-850',
+  // Comprehensive Theme styling configuration
+  const THEME_CONFIG: Record<ReaderTheme, {
+    wrapperBg: string;
+    bodyText: string;
+    secondaryText: string;
+    mutedText: string;
+    borderColor: string;
+    cardBg: string;
+    tableHeaderBg: string;
+    sourceBg: string;
+    faqBg: string;
+  }> = {
+    paper: {
+      wrapperBg: 'bg-[#F9F7F2]',
+      bodyText: 'text-[#181615]',
+      secondaryText: 'text-[#44403C]',
+      mutedText: 'text-stone-500',
+      borderColor: 'border-[#E7E5E4]',
+      cardBg: 'bg-white',
+      tableHeaderBg: 'bg-[#F5F2EA]',
+      sourceBg: 'bg-stone-100/90',
+      faqBg: 'bg-stone-50',
+    },
+    light: {
+      wrapperBg: 'bg-[#FFFFFF]',
+      bodyText: 'text-[#111827]',
+      secondaryText: 'text-[#374151]',
+      mutedText: 'text-stone-500',
+      borderColor: 'border-stone-200',
+      cardBg: 'bg-stone-50',
+      tableHeaderBg: 'bg-stone-100',
+      sourceBg: 'bg-stone-100',
+      faqBg: 'bg-stone-50',
+    },
+    sepia: {
+      wrapperBg: 'bg-[#F4ECD8]',
+      bodyText: 'text-[#2D2013]',
+      secondaryText: 'text-[#4A3828]',
+      mutedText: 'text-[#7D6B58]',
+      borderColor: 'border-[#D9CDB0]',
+      cardBg: 'bg-[#ECE2C6]',
+      tableHeaderBg: 'bg-[#E4D9BD]',
+      sourceBg: 'bg-[#ECE2C6]',
+      faqBg: 'bg-[#ECE2C6]',
+    },
+    dark: {
+      wrapperBg: 'bg-[#181615]',
+      bodyText: 'text-[#F5F5F4]',
+      secondaryText: 'text-[#D6D3D1]',
+      mutedText: 'text-stone-400',
+      borderColor: 'border-stone-800',
+      cardBg: 'bg-[#24211E]',
+      tableHeaderBg: 'bg-stone-800',
+      sourceBg: 'bg-stone-900',
+      faqBg: 'bg-[#24211E]',
+    },
   };
 
   const fontClasses: Record<ReaderFont, string> = {
@@ -461,11 +504,12 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
 
   const lineSpacingClasses = preferences.lineSpacing === 'relaxed' ? 'leading-loose tracking-wide' : 'leading-relaxed';
 
-  // Active accent style for Title, Headings & Keywords
+  // Active theme and accent style
+  const currentTheme = THEME_CONFIG[preferences.theme] || THEME_CONFIG.paper;
   const accentStyle = ACCENT_STYLES[preferences.accentColor] || ACCENT_STYLES.amber;
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${themeClasses[preferences.theme]}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${currentTheme.wrapperBg} ${currentTheme.bodyText}`}>
       {/* Top Reading Progress Bar */}
       <div className="fixed top-0 left-0 right-0 h-1 z-50 bg-stone-200/50">
         <div
@@ -475,11 +519,11 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
       </div>
 
       {/* Floating Sticky Actions Bar */}
-      <div className="sticky top-0 z-30 backdrop-blur-md bg-inherit/90 border-b border-[#E7E5E4]/80 px-4 sm:px-8 py-3">
+      <div className={`sticky top-0 z-30 backdrop-blur-md ${currentTheme.wrapperBg}/95 border-b ${currentTheme.borderColor} px-4 sm:px-8 py-3 transition-colors`}>
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
           <button
             onClick={onBack}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#E7E5E4] hover:border-stone-400 text-xs sm:text-sm font-semibold transition-all hover:bg-stone-100/50 cursor-pointer shrink-0"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border ${currentTheme.borderColor} hover:border-stone-400 text-xs sm:text-sm font-semibold transition-all hover:bg-stone-200/40 cursor-pointer shrink-0 ${currentTheme.bodyText}`}
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="hidden sm:inline">返回專題列表</span>
@@ -489,22 +533,22 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
           {/* Center/Right reader controls */}
           <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Quick Font Size Adjuster (A- / A+) */}
-            <div className="flex items-center bg-stone-100 dark:bg-stone-800 border border-[#E7E5E4] dark:border-stone-700 rounded-xl p-0.5">
+            <div className={`flex items-center ${currentTheme.cardBg} border ${currentTheme.borderColor} rounded-xl p-0.5 shadow-2xs`}>
               <button
                 onClick={handleDecreaseFontSize}
                 disabled={currentFontSizeIndex <= 0}
-                className="p-1.5 rounded-lg text-xs font-bold hover:bg-white dark:hover:bg-stone-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                className={`p-1.5 rounded-lg text-xs font-bold hover:bg-stone-200/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all ${currentTheme.bodyText}`}
                 title="縮小字級 (A-)"
               >
                 <Minus className="w-3.5 h-3.5" />
               </button>
-              <span className="px-2 text-[11px] font-mono font-bold text-stone-600 dark:text-stone-300 select-none">
+              <span className={`px-2 text-[11px] font-mono font-bold select-none ${currentTheme.secondaryText}`}>
                 {FONT_SIZES[currentFontSizeIndex]?.px || '17px'}
               </span>
               <button
                 onClick={handleIncreaseFontSize}
                 disabled={currentFontSizeIndex >= fontSizeOrder.length - 1}
-                className="p-1.5 rounded-lg text-xs font-bold hover:bg-white dark:hover:bg-stone-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                className={`p-1.5 rounded-lg text-xs font-bold hover:bg-stone-200/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all ${currentTheme.bodyText}`}
                 title="放大字級 (A+)"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -517,7 +561,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs sm:text-sm font-medium transition-all cursor-pointer ${
                 isPlayingAudio
                   ? 'bg-amber-500 text-stone-950 border-amber-600 font-bold animate-pulse'
-                  : 'border-[#E7E5E4] hover:bg-stone-100/50'
+                  : `${currentTheme.borderColor} hover:bg-stone-200/40 ${currentTheme.bodyText}`
               }`}
               title="語音朗讀專題"
             >
@@ -531,7 +575,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border transition-all cursor-pointer ${
                 showSettings
                   ? 'bg-[#1C1917] text-amber-400 border-[#1C1917]'
-                  : 'border-[#E7E5E4] hover:bg-stone-100/50'
+                  : `${currentTheme.borderColor} hover:bg-stone-200/40 ${currentTheme.bodyText}`
               }`}
               title="字體與標題顏色調整"
             >
@@ -545,7 +589,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
               className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border transition-all cursor-pointer ${
                 hasLiked
                   ? 'bg-rose-50 border-rose-300 text-rose-600 font-bold'
-                  : 'border-[#E7E5E4] hover:bg-stone-100/50'
+                  : `${currentTheme.borderColor} hover:bg-stone-200/40 ${currentTheme.bodyText}`
               }`}
             >
               <Heart className={`w-4 h-4 ${hasLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
@@ -558,7 +602,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
               className={`p-2 rounded-xl border transition-all cursor-pointer ${
                 isBookmarked
                   ? 'bg-amber-50 border-amber-300 text-amber-600'
-                  : 'border-[#E7E5E4] hover:bg-stone-100/50'
+                  : `${currentTheme.borderColor} hover:bg-stone-200/40 ${currentTheme.bodyText}`
               }`}
               title={isBookmarked ? '已收藏' : '加入收藏'}
             >
@@ -568,7 +612,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
             {/* Share */}
             <button
               onClick={handleShare}
-              className="p-2 rounded-xl border border-[#E7E5E4] hover:bg-stone-100/50 transition-all cursor-pointer relative"
+              className={`p-2 rounded-xl border ${currentTheme.borderColor} hover:bg-stone-200/40 transition-all cursor-pointer relative ${currentTheme.bodyText}`}
               title="分享文章"
             >
               {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4" />}
@@ -578,10 +622,10 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
 
         {/* Reader Settings Drawer */}
         {showSettings && (
-          <div className="max-w-4xl mx-auto mt-3 p-4 sm:p-5 rounded-2xl bg-white dark:bg-stone-900 border border-[#E7E5E4] dark:border-stone-800 shadow-xl space-y-4 text-xs transition-all animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className={`max-w-4xl mx-auto mt-3 p-4 sm:p-5 rounded-2xl ${currentTheme.cardBg} border ${currentTheme.borderColor} shadow-xl space-y-4 text-xs transition-all animate-in fade-in slide-in-from-top-2 duration-200`}>
             {/* 1. Title & Keyword Accent Colors */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-stone-200 dark:border-stone-800">
-              <div className="flex items-center gap-1.5 font-bold text-stone-700 dark:text-stone-300">
+            <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b ${currentTheme.borderColor}`}>
+              <div className={`flex items-center gap-1.5 font-bold ${currentTheme.bodyText}`}>
                 <Palette className="w-4 h-4 text-amber-600" />
                 <span>標題與關鍵字顏色：</span>
               </div>
@@ -596,7 +640,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
                       className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border font-medium transition-all ${
                         isActive
                           ? style.buttonActive + ' shadow-xs ring-1 ring-amber-500/50'
-                          : 'border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-100'
+                          : `${currentTheme.borderColor} ${currentTheme.cardBg} ${currentTheme.bodyText} hover:bg-stone-200/40`
                       }`}
                     >
                       <span
@@ -611,8 +655,8 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
             </div>
 
             {/* 2. Font Family Picker */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-stone-200 dark:border-stone-800">
-              <div className="flex items-center gap-1.5 font-bold text-stone-700 dark:text-stone-300">
+            <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b ${currentTheme.borderColor}`}>
+              <div className={`flex items-center gap-1.5 font-bold ${currentTheme.bodyText}`}>
                 <Type className="w-4 h-4 text-amber-600" />
                 <span>字型家族風格：</span>
               </div>
@@ -626,7 +670,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
                       className={`px-3 py-1.5 rounded-lg border font-medium transition-all ${f.className} ${
                         isActive
                           ? 'border-amber-500 bg-amber-500/15 text-amber-900 dark:text-amber-300 font-bold shadow-xs'
-                          : 'border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-100'
+                          : `${currentTheme.borderColor} ${currentTheme.cardBg} ${currentTheme.bodyText} hover:bg-stone-200/40`
                       }`}
                     >
                       {f.name}
@@ -637,9 +681,9 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
             </div>
 
             {/* 3. Font Size & Spacing */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-200 dark:border-stone-800">
+            <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b ${currentTheme.borderColor}`}>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-stone-700 dark:text-stone-300">字級大小：</span>
+                <span className={`font-bold ${currentTheme.bodyText}`}>字級大小：</span>
                 <div className="flex items-center gap-1">
                   {FONT_SIZES.map((sz) => (
                     <button
@@ -648,7 +692,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
                       className={`px-2.5 py-1 rounded-lg border font-medium ${
                         preferences.fontSize === sz.id
                           ? 'border-amber-500 bg-amber-500/15 text-amber-900 dark:text-amber-300 font-bold shadow-xs'
-                          : 'border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 text-stone-600 dark:text-stone-400'
+                          : `${currentTheme.borderColor} ${currentTheme.cardBg} ${currentTheme.secondaryText} hover:bg-stone-200/40`
                       }`}
                     >
                       {sz.label} ({sz.px})
@@ -658,13 +702,13 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="font-bold text-stone-700 dark:text-stone-300">排版行距：</span>
+                <span className={`font-bold ${currentTheme.bodyText}`}>排版行距：</span>
                 <button
                   onClick={() => setPreferences({ ...preferences, lineSpacing: 'normal' })}
                   className={`px-2.5 py-1 rounded-lg border font-medium ${
                     preferences.lineSpacing === 'normal'
                       ? 'border-amber-500 bg-amber-500/15 text-amber-900 dark:text-amber-300 font-bold'
-                      : 'border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 text-stone-600'
+                      : `${currentTheme.borderColor} ${currentTheme.cardBg} ${currentTheme.secondaryText}`
                   }`}
                 >
                   標準
@@ -674,7 +718,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
                   className={`px-2.5 py-1 rounded-lg border font-medium ${
                     preferences.lineSpacing === 'relaxed'
                       ? 'border-amber-500 bg-amber-500/15 text-amber-900 dark:text-amber-300 font-bold'
-                      : 'border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 text-stone-600'
+                      : `${currentTheme.borderColor} ${currentTheme.cardBg} ${currentTheme.secondaryText}`
                   }`}
                 >
                   舒適寬鬆
@@ -684,7 +728,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
 
             {/* 4. Reader Theme Background */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-              <span className="font-bold text-stone-700 dark:text-stone-300">背景紙張色調：</span>
+              <span className={`font-bold ${currentTheme.bodyText}`}>背景紙張色調：</span>
               <div className="flex flex-wrap items-center gap-1.5">
                 {(['paper', 'light', 'sepia', 'dark'] as ReaderTheme[]).map((thm) => (
                   <button
@@ -693,7 +737,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
                     className={`px-3 py-1.5 rounded-lg font-medium border capitalize ${
                       preferences.theme === thm
                         ? 'border-amber-500 bg-amber-500/15 text-amber-900 dark:text-amber-300 font-bold shadow-xs'
-                        : 'border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 text-stone-600 dark:text-stone-400'
+                        : `${currentTheme.borderColor} ${currentTheme.cardBg} ${currentTheme.secondaryText} hover:bg-stone-200/40`
                     }`}
                   >
                     {thm === 'paper'
@@ -714,14 +758,14 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
       {/* Main Article Content Container */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14">
         {/* Article Header */}
-        <header className="space-y-4 mb-8 sm:mb-12 border-b border-[#E7E5E4] pb-8">
+        <header className={`space-y-4 mb-8 sm:mb-12 border-b ${currentTheme.borderColor} pb-8`}>
           {/* Category & Date */}
           <div className="flex items-center gap-3 text-xs sm:text-sm font-bold">
             <span className={`px-3 py-1 rounded-full border ${accentStyle.tagBg} ${accentStyle.tagText} ${accentStyle.tagBorder} transition-colors shadow-2xs`}>
               {article.categoryName}
             </span>
             <span>·</span>
-            <span className="text-stone-500 font-normal">{article.createdAt}</span>
+            <span className={`${currentTheme.mutedText} font-normal`}>{article.createdAt}</span>
           </div>
 
           {/* Title */}
@@ -731,7 +775,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
 
           {/* Subtitle */}
           {article.subtitle && (
-            <p className={`${fontClasses[preferences.font]} text-base sm:text-xl text-stone-600 dark:text-stone-300 leading-relaxed font-medium`}>
+            <p className={`${fontClasses[preferences.font]} text-base sm:text-xl ${currentTheme.secondaryText} leading-relaxed font-medium`}>
               {article.subtitle}
             </p>
           )}
@@ -739,16 +783,16 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
           {/* Author info & Read statistics */}
           <div className="flex items-center justify-between pt-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-stone-300 border border-stone-400 flex items-center justify-center font-bold text-stone-800 text-sm overflow-hidden shrink-0">
+              <div className="w-10 h-10 rounded-full bg-stone-300 border border-stone-400 flex items-center justify-center font-bold text-stone-900 text-sm overflow-hidden shrink-0">
                 {article.author.name.slice(0, 1)}
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-bold">{article.author.name}</span>
-                <span className="text-xs text-stone-500">{article.author.title}</span>
+                <span className={`text-sm font-bold ${currentTheme.bodyText}`}>{article.author.name}</span>
+                <span className={`text-xs ${currentTheme.mutedText}`}>{article.author.title}</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-4 text-xs text-stone-500">
+            <div className={`flex items-center gap-4 text-xs ${currentTheme.mutedText}`}>
               <span className="flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5" />
                 預估閱讀 {article.readTimeMinutes} 分鐘
@@ -763,7 +807,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
 
         {/* Cover Image */}
         {article.coverImage && (
-          <div className="mb-10 rounded-2xl overflow-hidden border border-[#E7E5E4] shadow-md bg-stone-900">
+          <div className={`mb-10 rounded-2xl overflow-hidden border ${currentTheme.borderColor} shadow-md bg-stone-900`}>
             <img
               src={article.coverImage}
               alt={article.title}
@@ -777,12 +821,12 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
         )}
 
         {/* Body Text with Markdown & Table Support */}
-        <article className={`${fontClasses[preferences.font]} ${fontSizeClasses[preferences.fontSize]} ${lineSpacingClasses} article-markdown-content transition-all`}>
+        <article className={`${fontClasses[preferences.font]} ${fontSizeClasses[preferences.fontSize]} ${lineSpacingClasses} article-markdown-content transition-all ${currentTheme.bodyText}`}>
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={{
               h2: ({ children }) => (
-                <h2 className={`${fontClasses[preferences.font]} ${accentStyle.h2Color} text-2xl sm:text-3xl font-extrabold mt-10 mb-4 border-b border-[#E7E5E4] pb-2 transition-colors`}>
+                <h2 className={`${fontClasses[preferences.font]} ${accentStyle.h2Color} text-2xl sm:text-3xl font-extrabold mt-10 mb-4 border-b ${currentTheme.borderColor} pb-2 transition-colors`}>
                   {children}
                 </h2>
               ),
@@ -792,44 +836,44 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
                 </h3>
               ),
               p: ({ children }) => (
-                <p className="mb-5 text-[#1C1917]/90 dark:text-stone-200/90">{children}</p>
+                <p className={`mb-5 ${currentTheme.bodyText} font-normal leading-relaxed`}>{children}</p>
               ),
               blockquote: ({ children }) => (
-                <blockquote className={`border-l-4 ${accentStyle.blockquoteBorder} ${accentStyle.blockquoteBg} p-4 sm:p-5 my-6 text-stone-800 dark:text-stone-200 italic rounded-r-md transition-colors shadow-2xs`}>
+                <blockquote className={`border-l-4 ${accentStyle.blockquoteBorder} ${accentStyle.blockquoteBg} p-4 sm:p-5 my-6 ${currentTheme.bodyText} italic rounded-r-md transition-colors shadow-2xs`}>
                   {children}
                 </blockquote>
               ),
               ul: ({ children }) => (
-                <ul className="list-disc list-inside space-y-2 my-5 text-stone-800 dark:text-stone-200 pl-2">{children}</ul>
+                <ul className={`list-disc list-inside space-y-2 my-5 ${currentTheme.bodyText} pl-2`}>{children}</ul>
               ),
               ol: ({ children }) => (
-                <ol className="list-decimal list-inside space-y-2 my-5 text-stone-800 dark:text-stone-200 pl-2">{children}</ol>
+                <ol className={`list-decimal list-inside space-y-2 my-5 ${currentTheme.bodyText} pl-2`}>{children}</ol>
               ),
               li: ({ children }) => (
-                <li className="leading-relaxed">{children}</li>
+                <li className={`${currentTheme.bodyText} leading-relaxed my-1.5`}>{children}</li>
               ),
               hr: () => (
-                <hr className="my-8 border-t border-[#E7E5E4]" />
+                <hr className={`my-8 border-t ${currentTheme.borderColor}`} />
               ),
               table: ({ children }) => (
-                <div className="overflow-x-auto my-6 border border-[#E7E5E4] bg-white dark:bg-stone-850 shadow-2xs">
+                <div className={`overflow-x-auto my-6 border ${currentTheme.borderColor} ${currentTheme.cardBg} shadow-2xs rounded-xl`}>
                   <table className="w-full text-left text-xs sm:text-sm border-collapse min-w-[320px]">{children}</table>
                 </div>
               ),
               thead: ({ children }) => (
-                <thead className="bg-[#F5F2EA] dark:bg-stone-800 border-b border-[#E7E5E4] font-bold">{children}</thead>
+                <thead className={`${currentTheme.tableHeaderBg} border-b ${currentTheme.borderColor} ${currentTheme.bodyText} font-bold`}>{children}</thead>
               ),
               tbody: ({ children }) => (
-                <tbody className="divide-y divide-[#E7E5E4] dark:divide-stone-700">{children}</tbody>
+                <tbody className={`divide-y ${currentTheme.borderColor}`}>{children}</tbody>
               ),
               tr: ({ children }) => (
-                <tr className="hover:bg-amber-50/40 dark:hover:bg-stone-700/40 transition-colors">{children}</tr>
+                <tr className="hover:bg-amber-500/10 transition-colors">{children}</tr>
               ),
               th: ({ children }) => (
-                <th className="px-4 py-3 font-bold tracking-wide border-r border-[#E7E5E4] dark:border-stone-700 last:border-r-0 whitespace-nowrap bg-stone-100/60 dark:bg-stone-800/60">{children}</th>
+                <th className={`px-4 py-3 font-bold tracking-wide border-r ${currentTheme.borderColor} last:border-r-0 whitespace-nowrap ${currentTheme.tableHeaderBg} ${currentTheme.bodyText}`}>{children}</th>
               ),
               td: ({ children }) => (
-                <td className="px-4 py-3 border-r border-[#E7E5E4] dark:border-stone-700 last:border-r-0 align-top">{children}</td>
+                <td className={`px-4 py-3 border-r ${currentTheme.borderColor} last:border-r-0 align-top ${currentTheme.bodyText}`}>{children}</td>
               ),
               strong: ({ children }) => (
                 <strong className={`font-bold ${accentStyle.highlightText}`}>{children}</strong>
@@ -845,9 +889,9 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
           <section
             id="faq"
             aria-label="常見問答與核心事實解答"
-            className="mt-12 p-6 sm:p-8 rounded-2xl bg-stone-50 dark:bg-stone-850 border border-stone-200 dark:border-stone-800"
+            className={`mt-12 p-6 sm:p-8 rounded-2xl ${currentTheme.faqBg} border ${currentTheme.borderColor}`}
           >
-            <div className="flex items-center gap-2 mb-6 pb-3 border-b border-stone-200 dark:border-stone-750">
+            <div className={`flex items-center gap-2 mb-6 pb-3 border-b ${currentTheme.borderColor}`}>
               <HelpCircle className={`w-5 h-5 ${accentStyle.highlightText}`} />
               <h3 className={`text-xl font-bold ${accentStyle.h3Color}`}>
                 專題核心問答 · 關鍵事實解析
@@ -857,13 +901,13 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
               {article.faqs.map((faq, idx) => (
                 <div
                   key={idx}
-                  className="p-4 rounded-xl bg-white dark:bg-stone-800 border border-stone-200/90 dark:border-stone-700 shadow-2xs space-y-2"
+                  className={`p-4 rounded-xl ${currentTheme.cardBg} border ${currentTheme.borderColor} shadow-2xs space-y-2`}
                 >
-                  <h4 className="font-bold text-stone-900 dark:text-stone-100 text-sm sm:text-base flex items-start gap-2">
+                  <h4 className={`font-bold text-sm sm:text-base flex items-start gap-2 ${currentTheme.bodyText}`}>
                     <span className={`font-extrabold ${accentStyle.highlightText}`}>Q{idx + 1}.</span>
                     <span>{faq.question}</span>
                   </h4>
-                  <p className={`text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed pl-6 border-l-2 ${accentStyle.blockquoteBorder}`}>
+                  <p className={`text-xs sm:text-sm ${currentTheme.secondaryText} leading-relaxed pl-6 border-l-2 ${accentStyle.blockquoteBorder}`}>
                     {faq.answer}
                   </p>
                 </div>
@@ -874,15 +918,15 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
 
         {/* Tags / Keywords (Thematic Color Accent) */}
         {article.tags && article.tags.length > 0 && (
-          <div className="mt-10 pt-6 border-t border-[#E7E5E4] flex flex-wrap items-center gap-2.5">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-stone-500">
+          <div className={`mt-10 pt-6 border-t ${currentTheme.borderColor} flex flex-wrap items-center gap-2.5`}>
+            <div className={`flex items-center gap-1.5 text-xs font-bold ${currentTheme.mutedText}`}>
               <Tag className="w-3.5 h-3.5" />
               <span>專題關鍵字標籤：</span>
             </div>
             {article.tags.map((tag, idx) => (
               <span
                 key={idx}
-                className={`px-3 py-1 rounded-lg text-xs border ${accentStyle.tagBg} ${accentStyle.tagText} ${accentStyle.tagBorder} transition-all duration-200 shadow-2xs`}
+                className={`px-3 py-1 rounded-lg text-xs border ${accentStyle.tagBg} ${accentStyle.tagText} ${accentStyle.tagBorder} transition-all duration-200 shadow-2xs font-medium`}
               >
                 #{tag}
               </span>
@@ -894,16 +938,16 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
         <section
           id="sources"
           aria-label="參考資料與官方報導引述出處"
-          className="mt-10 p-6 rounded-2xl bg-stone-100/80 border border-stone-300/80 text-xs text-stone-700"
+          className={`mt-10 p-6 rounded-2xl ${currentTheme.sourceBg} border ${currentTheme.borderColor} text-xs ${currentTheme.secondaryText}`}
         >
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-stone-200">
+          <div className={`flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b ${currentTheme.borderColor}`}>
             <div className="flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-amber-700" />
-              <h4 className="font-bold text-sm text-stone-900">參考資料與引述出處 (Citable Sources)</h4>
+              <h4 className={`font-bold text-sm ${currentTheme.bodyText}`}>參考資料與引述出處 (Citable Sources)</h4>
             </div>
             <button
               onClick={handleCopyCitation}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-stone-300 hover:border-amber-600 text-stone-700 hover:text-amber-800 text-xs font-medium transition-all cursor-pointer shadow-2xs"
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg ${currentTheme.cardBg} border ${currentTheme.borderColor} hover:border-amber-600 ${currentTheme.bodyText} hover:text-amber-800 text-xs font-medium transition-all cursor-pointer shadow-2xs`}
             >
               {citationCopied ? (
                 <>
@@ -919,13 +963,13 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
             </button>
           </div>
 
-          <ol className="list-decimal list-inside space-y-2 font-mono text-stone-600">
+          <ol className={`list-decimal list-inside space-y-2 font-mono ${currentTheme.secondaryText}`}>
             {article.sources && article.sources.length > 0 ? (
               article.sources.map((src, idx) => (
                 <li key={idx} className="leading-relaxed">
-                  <cite className="not-italic font-sans text-stone-800 font-semibold">{src.title}</cite>
-                  {src.publisher && <span className="text-stone-500 font-sans"> · 出處：{src.publisher}</span>}
-                  {src.date && <span className="text-stone-400 font-sans"> ({src.date})</span>}
+                  <cite className={`not-italic font-sans font-semibold ${currentTheme.bodyText}`}>{src.title}</cite>
+                  {src.publisher && <span className={`${currentTheme.mutedText} font-sans`}> · 出處：{src.publisher}</span>}
+                  {src.date && <span className={`${currentTheme.mutedText} font-sans`}> ({src.date})</span>}
                   {src.url && (
                     <a
                       href={src.url}
@@ -942,12 +986,12 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
             ) : (
               <>
                 <li className="leading-relaxed">
-                  <cite className="not-italic font-sans text-stone-800 font-semibold">
+                  <cite className={`not-italic font-sans font-semibold ${currentTheme.bodyText}`}>
                     《莫忘舊聞》社會焦點檔案庫 · 典藏專題篇章（{article.createdAt}）
                   </cite>
                 </li>
                 <li className="leading-relaxed">
-                  <cite className="not-italic font-sans text-stone-800 font-semibold">
+                  <cite className={`not-italic font-sans font-semibold ${currentTheme.bodyText}`}>
                     主流新聞通訊社、地方政府公報與公開歷史報導綜合彙整
                   </cite>
                 </li>
@@ -957,19 +1001,19 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
         </section>
 
         {/* Bottom Pagination (Prev / Next Article) */}
-        <div className="mt-12 pt-8 border-t border-[#E7E5E4] grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className={`mt-12 pt-8 border-t ${currentTheme.borderColor} grid grid-cols-1 sm:grid-cols-2 gap-4`}>
           {prevArticle ? (
             <button
               onClick={() => {
                 onSelectArticle(prevArticle);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="p-4 rounded-xl border border-[#E7E5E4] hover:border-amber-500 bg-white hover:bg-stone-50 text-left transition-all group cursor-pointer"
+              className={`p-4 rounded-xl border ${currentTheme.borderColor} hover:border-amber-500 ${currentTheme.cardBg} hover:bg-stone-200/30 text-left transition-all group cursor-pointer`}
             >
-              <span className="text-xs text-stone-400 flex items-center gap-1 mb-1">
+              <span className={`text-xs ${currentTheme.mutedText} flex items-center gap-1 mb-1`}>
                 <ChevronLeft className="w-3.5 h-3.5" /> 上一篇篇章
               </span>
-              <p className="font-editorial-serif font-bold text-sm text-[#1C1917] group-hover:text-[#B45309] line-clamp-1">
+              <p className={`font-editorial-serif font-bold text-sm ${currentTheme.bodyText} group-hover:text-[#B45309] line-clamp-1`}>
                 {prevArticle.title}
               </p>
             </button>
@@ -981,12 +1025,12 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
                 onSelectArticle(nextArticle);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="p-4 rounded-xl border border-[#E7E5E4] hover:border-amber-500 bg-white hover:bg-stone-50 text-right transition-all group cursor-pointer"
+              className={`p-4 rounded-xl border ${currentTheme.borderColor} hover:border-amber-500 ${currentTheme.cardBg} hover:bg-stone-200/30 text-right transition-all group cursor-pointer`}
             >
-              <span className="text-xs text-stone-400 flex items-center justify-end gap-1 mb-1">
+              <span className={`text-xs ${currentTheme.mutedText} flex items-center justify-end gap-1 mb-1`}>
                 下一篇篇章 <ChevronRight className="w-3.5 h-3.5" />
               </span>
-              <p className="font-editorial-serif font-bold text-sm text-[#1C1917] group-hover:text-[#B45309] line-clamp-1">
+              <p className={`font-editorial-serif font-bold text-sm ${currentTheme.bodyText} group-hover:text-[#B45309] line-clamp-1`}>
                 {nextArticle.title}
               </p>
             </button>
@@ -995,8 +1039,8 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
 
         {/* Related Articles */}
         {relatedArticles.length > 0 && (
-          <section className="mt-16 pt-10 border-t border-[#E7E5E4] space-y-6">
-            <h3 className="font-editorial-serif text-xl font-bold text-[#1C1917]">
+          <section className={`mt-16 pt-10 border-t ${currentTheme.borderColor} space-y-6`}>
+            <h3 className={`font-editorial-serif text-xl font-bold ${currentTheme.bodyText}`}>
               更多深度專題篇章
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -1007,15 +1051,15 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
                     onSelectArticle(relArt);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="p-4 rounded-xl bg-white border border-[#E7E5E4] hover:border-amber-500 shadow-2xs hover:shadow-md transition-all cursor-pointer group space-y-2"
+                  className={`p-4 rounded-xl ${currentTheme.cardBg} border ${currentTheme.borderColor} hover:border-amber-500 shadow-2xs hover:shadow-md transition-all cursor-pointer group space-y-2`}
                 >
                   <span className="text-[11px] font-bold text-amber-700">
                     {relArt.categoryName}
                   </span>
-                  <h4 className="font-editorial-serif font-bold text-sm text-[#1C1917] group-hover:text-[#B45309] line-clamp-2">
+                  <h4 className={`font-editorial-serif font-bold text-sm ${currentTheme.bodyText} group-hover:text-[#B45309] line-clamp-2`}>
                     {relArt.title}
                   </h4>
-                  <p className="text-[11px] text-stone-500 font-editorial-serif line-clamp-2">
+                  <p className={`text-[11px] ${currentTheme.mutedText} font-editorial-serif line-clamp-2`}>
                     {relArt.excerpt}
                   </p>
                 </div>

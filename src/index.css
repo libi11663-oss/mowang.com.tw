@@ -11,6 +11,9 @@
     background-color: #F5F2ED;
     color: #1C1917;
     font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 }
 
@@ -24,6 +27,17 @@
 
 .font-cinzel {
   font-family: 'Cinzel', serif;
+}
+
+/* Article markdown text clarity & contrast for mobile devices */
+.article-markdown-content {
+  -webkit-text-size-adjust: 100%;
+}
+
+.article-markdown-content p,
+.article-markdown-content li {
+  word-break: break-word;
+  line-height: 1.85;
 }
 
 /* Custom scrollbar */
