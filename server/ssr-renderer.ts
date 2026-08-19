@@ -4,7 +4,7 @@ import { Article } from '../src/types';
 
 export const SITE_URL = 'https://mowang.com.tw';
 export const SITE_NAME = '莫忘舊聞';
-export const SITE_DESCRIPTION = '莫忘舊聞 (mowang.com.tw) — 深度歷史檔案與時代舊聞典藏專題平台，沉澱時光記憶，解讀時代轉折與歷史回響。';
+export const SITE_DESCRIPTION = '莫忘舊聞 (mowang.com.tw) — 複習舊聞，挖掘深處記憶。在大數據時代下幫助人們複習該被記住的重大事情。';
 
 /**
  * Lightweight Markdown to clean semantic HTML converter for SSR/SSG
@@ -404,14 +404,14 @@ export function renderHomeHtml(articles: Article[], templateHtml?: string): stri
   `;
 
   let result = base;
-  result = result.replace(/<title>.*?<\/title>/i, `<title>${SITE_NAME} | 沉澱時光記憶 · 解讀時代舊聞</title>`);
+  result = result.replace(/<title>.*?<\/title>/i, `<title>${SITE_NAME} | 複習舊聞 · 挖掘深處記憶</title>`);
 
   const metaTags = `
     <meta name="description" content="${SITE_DESCRIPTION}" />
-    <meta name="keywords" content="莫忘舊聞, 莫忘, 時代舊聞, 歷史專題, 社會事件, 男女議題, 歷史檔案, mowang, mowang.com.tw" />
+    <meta name="keywords" content="莫忘舊聞, 複習舊聞, 挖掘深處記憶, 時代舊聞, 歷史專題, 社會事件, 歷史檔案, 經典專題, mowang, mowang.com.tw" />
     <link rel="canonical" href="${SITE_URL}/" />
     
-    <meta property="og:title" content="${SITE_NAME} | 沉澱時光記憶 · 解讀時代舊聞" />
+    <meta property="og:title" content="${SITE_NAME} | 複習舊聞 · 挖掘深處記憶" />
     <meta property="og:description" content="${SITE_DESCRIPTION}" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="${SITE_URL}/" />
