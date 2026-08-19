@@ -598,9 +598,9 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
   const accentStyle = ACCENT_STYLES[preferences.accentColor] || ACCENT_STYLES.amber;
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${currentTheme.wrapperBg} ${currentTheme.bodyText}`}>
+    <div className={`min-h-screen max-w-full overflow-x-hidden transition-colors duration-300 w-full ${currentTheme.wrapperBg} ${currentTheme.bodyText}`}>
       {/* Top Reading Progress Bar */}
-      <div className="fixed top-0 left-0 right-0 h-1 z-50 bg-stone-200/50">
+      <div className="fixed top-0 left-0 right-0 h-1 z-50 bg-stone-200/50 pointer-events-none">
         <div
           className="h-full bg-amber-500 transition-all duration-150"
           style={{ width: `${readingProgress}%` }}
@@ -608,109 +608,111 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
       </div>
 
       {/* Floating Sticky Actions Bar */}
-      <div className={`sticky top-0 z-30 backdrop-blur-md ${currentTheme.wrapperBg}/95 border-b ${currentTheme.borderColor} px-4 sm:px-8 py-3 transition-colors`}>
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
+      <div className={`sticky top-0 z-30 backdrop-blur-md ${currentTheme.wrapperBg}/95 border-b ${currentTheme.borderColor} px-2 sm:px-6 lg:px-8 py-2 sm:py-3 transition-colors w-full max-w-full overflow-hidden`}>
+        <div className="max-w-4xl mx-auto flex items-center justify-between gap-1.5 sm:gap-3 w-full">
           <button
             onClick={onBack}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border ${currentTheme.borderColor} hover:border-stone-400 text-xs sm:text-sm font-semibold transition-all hover:bg-stone-200/40 cursor-pointer shrink-0 ${currentTheme.bodyText}`}
+            className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-xl border ${currentTheme.borderColor} hover:border-stone-400 text-xs sm:text-sm font-semibold transition-all hover:bg-stone-200/40 cursor-pointer shrink-0 ${currentTheme.bodyText}`}
+            title="返回專題列表"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="hidden sm:inline">返回專題列表</span>
-            <span className="sm:hidden">返回</span>
+            <span className="sm:hidden text-xs">返回</span>
           </button>
 
           {/* Center/Right reader controls */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
             {/* Quick Font Size Adjuster (A- / A+) */}
             <div className={`flex items-center ${currentTheme.cardBg} border ${currentTheme.borderColor} rounded-xl p-0.5 shadow-2xs`}>
               <button
                 onClick={handleDecreaseFontSize}
                 disabled={currentFontSizeIndex <= 0}
-                className={`p-1.5 rounded-lg text-xs font-bold hover:bg-stone-200/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all ${currentTheme.bodyText}`}
+                className={`p-1 sm:p-1.5 rounded-lg text-xs font-bold hover:bg-stone-200/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all ${currentTheme.bodyText}`}
                 title="縮小字級 (A-)"
               >
-                <Minus className="w-3.5 h-3.5" />
+                <Minus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </button>
-              <span className={`px-2 text-[11px] font-mono font-bold select-none ${currentTheme.secondaryText}`}>
+              <span className={`px-1.5 sm:px-2 text-[10px] sm:text-[11px] font-mono font-bold select-none ${currentTheme.secondaryText}`}>
                 {FONT_SIZES[currentFontSizeIndex]?.px || '17px'}
               </span>
               <button
                 onClick={handleIncreaseFontSize}
                 disabled={currentFontSizeIndex >= fontSizeOrder.length - 1}
-                className={`p-1.5 rounded-lg text-xs font-bold hover:bg-stone-200/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all ${currentTheme.bodyText}`}
+                className={`p-1 sm:p-1.5 rounded-lg text-xs font-bold hover:bg-stone-200/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all ${currentTheme.bodyText}`}
                 title="放大字級 (A+)"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </button>
             </div>
 
             {/* Audio Reader */}
             <button
               onClick={handleToggleAudio}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs sm:text-sm font-medium transition-all cursor-pointer ${
+              className={`flex items-center gap-1 p-1.5 sm:px-3 sm:py-1.5 rounded-xl border text-xs sm:text-sm font-medium transition-all cursor-pointer ${
                 isPlayingAudio
                   ? 'bg-amber-500 text-stone-950 border-amber-600 font-bold animate-pulse'
                   : `${currentTheme.borderColor} hover:bg-stone-200/40 ${currentTheme.bodyText}`
               }`}
               title="語音朗讀專題"
             >
-              {isPlayingAudio ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              {isPlayingAudio ? <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
               <span className="hidden md:inline">{isPlayingAudio ? '停止朗讀' : '語音聽報'}</span>
             </button>
 
             {/* Reader Settings Toggle (Font & Color Palette) */}
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border transition-all cursor-pointer ${
+              className={`flex items-center gap-1 p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl border transition-all cursor-pointer ${
                 showSettings
                   ? 'bg-[#1C1917] text-amber-400 border-[#1C1917]'
                   : `${currentTheme.borderColor} hover:bg-stone-200/40 ${currentTheme.bodyText}`
               }`}
               title="字體與標題顏色調整"
             >
-              <Palette className="w-4 h-4 text-amber-500" />
-              <span className="hidden sm:inline text-xs font-semibold">排版色彩</span>
+              <Palette className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500" />
+              <span className="hidden md:inline text-xs font-semibold">排版色彩</span>
             </button>
 
             {/* Like */}
             <button
               onClick={handleLike}
-              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border transition-all cursor-pointer ${
+              className={`flex items-center gap-1 p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl border transition-all cursor-pointer ${
                 hasLiked
                   ? 'bg-rose-50 border-rose-300 text-rose-600 font-bold'
                   : `${currentTheme.borderColor} hover:bg-stone-200/40 ${currentTheme.bodyText}`
               }`}
+              title="按讚"
             >
-              <Heart className={`w-4 h-4 ${hasLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-              <span className="text-xs">{likesCount}</span>
+              <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${hasLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+              <span className="text-[11px] sm:text-xs">{likesCount}</span>
             </button>
 
             {/* Bookmark */}
             <button
               onClick={() => onToggleBookmark(article.id)}
-              className={`p-2 rounded-xl border transition-all cursor-pointer ${
+              className={`p-1.5 sm:p-2 rounded-xl border transition-all cursor-pointer ${
                 isBookmarked
                   ? 'bg-amber-50 border-amber-300 text-amber-600'
                   : `${currentTheme.borderColor} hover:bg-stone-200/40 ${currentTheme.bodyText}`
               }`}
               title={isBookmarked ? '已收藏' : '加入收藏'}
             >
-              <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}`} />
+              <Bookmark className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}`} />
             </button>
 
             {/* Share with Social Popover */}
             <div className="relative">
               <button
                 onClick={handleShare}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border transition-all cursor-pointer ${
+                className={`flex items-center gap-1 p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl border transition-all cursor-pointer ${
                   showShareMenu
                     ? 'bg-amber-500 text-stone-950 border-amber-600 font-bold'
                     : `${currentTheme.borderColor} hover:bg-stone-200/40 ${currentTheme.bodyText}`
                 }`}
-                title="分享至社群媒體 (Facebook, LINE, X)"
+                title="分享至社群媒體 (Threads, IG, FB, LINE, X)"
               >
-                <Share2 className="w-4 h-4" />
-                <span className="hidden sm:inline text-xs font-semibold">分享</span>
+                <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden md:inline text-xs font-semibold">分享</span>
               </button>
 
               {/* Floating Share Menu Popover */}

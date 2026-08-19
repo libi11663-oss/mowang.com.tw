@@ -467,7 +467,7 @@ export function App() {
   }, [selectedCategory]);
 
   return (
-    <div className="min-h-screen bg-[#F9F7F2] text-[#1C1917] flex flex-col selection:bg-amber-200 selection:text-stone-900">
+    <div className="min-h-screen max-w-full overflow-x-hidden bg-[#F9F7F2] text-[#1C1917] flex flex-col selection:bg-amber-200 selection:text-stone-900 w-full">
       {/* Top Navbar & Category Sub-bar */}
       <Header
         currentCategory={selectedCategory}
@@ -488,7 +488,7 @@ export function App() {
       />
 
       {/* Main View Router */}
-      <div className="flex-1">
+      <div className="flex-1 w-full max-w-full overflow-x-hidden">
         {currentView === 'detail' && selectedArticle ? (
           <ArticleDetailView
             article={selectedArticle}
@@ -510,12 +510,12 @@ export function App() {
           />
         ) : (
           /* List / Feed View */
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 animate-fadeIn">
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 animate-fadeIn w-full box-border overflow-hidden">
             {/* Top Editorial Highlight & Sorting Section */}
             <section className="mb-8">
               <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 lg:gap-8">
                 {/* Left: Editorial Highlight Banner */}
-                <div className="border-l-4 sm:border-l-[5px] border-amber-500 pl-5 sm:pl-7 flex-1">
+                <div className="border-l-4 sm:border-l-[5px] border-amber-500 pl-4 sm:pl-7 flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 text-amber-600 font-bold text-xs sm:text-[13px] tracking-wider uppercase mb-2 sm:mb-3">
                     <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                     <span>
@@ -533,7 +533,7 @@ export function App() {
                 </div>
 
                 {/* Right: Sorting & Feature Filters Card */}
-                <div className="bg-stone-50/60 sm:bg-stone-100/40 border border-[#E7E5E4] p-4 sm:p-5 self-start lg:self-end min-w-[280px] sm:min-w-[360px] lg:min-w-[420px]">
+                <div className="bg-stone-50/60 sm:bg-stone-100/40 border border-[#E7E5E4] p-4 sm:p-5 w-full lg:w-auto min-w-0 lg:min-w-[420px] box-border self-start lg:self-end">
                   {/* Row 1: Sorting buttons */}
                   <div className="flex items-center flex-wrap gap-2 text-xs sm:text-sm">
                     <span className="text-stone-500 font-medium mr-1 select-none">
