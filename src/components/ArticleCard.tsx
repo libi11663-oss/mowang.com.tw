@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Article } from '../types';
-import { Bookmark, Clock, Eye, Heart, Share2 } from 'lucide-react';
+import { Bookmark, Check, Clock, Eye, Heart, Share2 } from 'lucide-react';
 
 interface ArticleCardProps {
   article: Article;
@@ -19,16 +19,21 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   isBookmarked,
   featured = false,
 }) => {
+  const [copied, setCopied] = useState(false);
+
   const handleShare = (e: React.MouseEvent) => {
     e.stopPropagation();
+    const shareUrl = `https://mowang.com.tw/article/${article.id}`;
     if (navigator.share) {
       navigator.share({
-        title: article.title,
+        title: `【莫忘舊聞】${article.title}`,
         text: article.excerpt,
-        url: window.location.href,
+        url: shareUrl,
       }).catch(() => {});
     } else {
-      navigator.clipboard.writeText(`${article.title} - 莫忘舊聞\n${window.location.href}`);
+      navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
@@ -110,6 +115,14 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
             </div>
 
             <div className="flex items-center gap-1">
+              <button
+                onClick={handleShare}
+                className="p-2 rounded-xl border border-[#E7E5E4] bg-white text-stone-400 hover:text-amber-600 hover:border-amber-300 transition-all cursor-pointer"
+                title="分享專題"
+              >
+                {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4" />}
+              </button>
+
               <button
                 onClick={(e) => onToggleBookmark(article.id, e)}
                 className={`p-2 rounded-xl border transition-all cursor-pointer ${
@@ -204,6 +217,14 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
           </div>
 
           <div className="flex items-center gap-1">
+            <button
+              onClick={handleShare}
+              className="p-1.5 rounded-lg text-stone-400 hover:text-amber-600 hover:bg-stone-100 transition-colors cursor-pointer"
+              title="分享專題"
+            >
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
+            </button>
+
             {onLike && (
               <button
                 onClick={(e) => onLike(article.id, e)}

@@ -38,6 +38,37 @@ import {
   Tag,
 } from 'lucide-react';
 
+// Custom SVG Icons for Social Media Platforms
+const FacebookIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+  </svg>
+);
+
+const LineIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.019 9.607.391.084.922.258 1.057.592.121.303.079.778.039 1.085l-.171 1.027c-.053.303-.242 1.186 1.039.646 1.281-.54 6.911-4.069 9.428-6.967 1.739-1.907 2.589-3.864 2.589-5.992zm-14.869 3.013h-2.197a.78.78 0 0 1-.78-.78v-4.468a.78.78 0 0 1 .78-.78h2.197a.78.78 0 0 1 0 1.56h-1.417v.674h1.417a.78.78 0 0 1 0 1.56h-1.417v.674h1.417a.78.78 0 0 1 0 1.56zm3.326 0a.78.78 0 0 1-.78-.78v-4.468a.78.78 0 1 1 1.56 0v4.468a.78.78 0 0 1-.78.78zm5.556 0a.78.78 0 0 1-.606-.293l-2.029-2.735v2.248a.78.78 0 1 1-1.56 0v-4.468a.78.78 0 0 1 1.386-.487l2.029 2.735v-2.248a.78.78 0 1 1 1.56 0v4.468a.78.78 0 0 1-.78.78zm3.326-3.688a.78.78 0 1 1 0-1.56h1.417v-.674h-1.417a.78.78 0 1 1 0-1.56h2.197a.78.78 0 0 1 .78.78v4.468a.78.78 0 0 1-.78.78h-2.197a.78.78 0 0 1 0-1.56h1.417v-.674h-1.417z"/>
+  </svg>
+);
+
+const ThreadsIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12.186 24h-.007C5.463 24 0 18.537 0 11.814 0 5.09 5.463 0 12.179 0c6.716 0 12.179 5.09 12.179 11.814 0 4.148-2.073 7.822-5.462 9.778-.45.257-.996.115-1.253-.335-.258-.45-.115-.996.335-1.253 2.96-1.71 4.78-4.918 4.78-8.19 0-5.836-4.764-10.214-10.579-10.214-5.815 0-10.579 4.378-10.579 10.214 0 5.836 4.764 10.214 10.579 10.214.004 0 .01 0 .015 0 3.197-.02 5.926-1.42 7.683-3.943.31-.446.931-.555 1.377-.245.446.31.555.931.245 1.377-2.059 2.956-5.26 4.597-9.008 4.62zm4.01-14.773c-.45-.257-.996-.115-1.253.335-.98 1.706-2.82 2.766-4.78 2.766-2.58 0-4.68-1.95-4.68-4.35 0-2.4 2.1-4.35 4.68-4.35 2.19 0 4.08 1.44 4.57 3.44.11.45.56.73 1.01.62.45-.11.73-.56.62-1.01-.64-2.61-3.1-4.65-6.2-4.65-3.46 0-6.28 2.62-6.28 5.95 0 3.33 2.82 5.95 6.28 5.95 2.65 0 5.12-1.43 6.44-3.73.26-.45.12-.996-.33-1.253z"/>
+  </svg>
+);
+
+const InstagramIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+  </svg>
+);
+
+const TwitterXIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+  </svg>
+);
+
 export interface AccentStyle {
   id: ReaderAccentColor;
   name: string;
@@ -198,6 +229,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
   };
 
   const [showSettings, setShowSettings] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
   const [readingProgress, setReadingProgress] = useState(0);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -390,21 +422,78 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
     }
   };
 
-  // Share interaction
-  const handleShare = () => {
+  // Social Media Sharing & Link helpers
+  const getCanonicalShareUrl = () => {
+    return `https://mowang.com.tw/article/${article.id}`;
+  };
+
+  const handleShareFacebook = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const url = encodeURIComponent(getCanonicalShareUrl());
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'noopener,noreferrer,width=620,height=580');
+    setShowShareMenu(false);
+  };
+
+  const handleShareLine = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const url = encodeURIComponent(getCanonicalShareUrl());
+    const text = encodeURIComponent(`【莫忘舊聞】${article.title}\n${article.subtitle ? article.subtitle + '\n' : ''}${getCanonicalShareUrl()}`);
+    window.open(`https://social-plugins.line.me/lineit/share?url=${url}&text=${text}`, '_blank', 'noopener,noreferrer,width=620,height=580');
+    setShowShareMenu(false);
+  };
+
+  const handleShareThreads = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const url = getCanonicalShareUrl();
+    const text = encodeURIComponent(`【莫忘舊聞】${article.title}\n${article.subtitle ? article.subtitle + '\n' : ''}${url}`);
+    window.open(`https://www.threads.net/intent/post?text=${text}`, '_blank', 'noopener,noreferrer,width=620,height=580');
+    setShowShareMenu(false);
+  };
+
+  const handleShareInstagram = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const url = getCanonicalShareUrl();
+    navigator.clipboard.writeText(`【莫忘舊聞】${article.title}\n${url}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+    window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
+    setShowShareMenu(false);
+  };
+
+  const handleShareTwitter = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const url = encodeURIComponent(getCanonicalShareUrl());
+    const text = encodeURIComponent(`【莫忘舊聞】${article.title} — 複習舊聞 · 挖掘深處記憶\n`);
+    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank', 'noopener,noreferrer,width=620,height=580');
+    setShowShareMenu(false);
+  };
+
+  const handleCopyArticleLink = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    navigator.clipboard.writeText(getCanonicalShareUrl());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
+
+  const handleNativeShare = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     if (navigator.share) {
       navigator
         .share({
-          title: article.title,
+          title: `【莫忘舊聞】${article.title}`,
           text: article.excerpt,
-          url: window.location.href,
+          url: getCanonicalShareUrl(),
         })
+        .then(() => setShowShareMenu(false))
         .catch(() => {});
     } else {
-      navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      handleCopyArticleLink();
     }
+  };
+
+  // Generic share trigger
+  const handleShare = () => {
+    setShowShareMenu((prev) => !prev);
   };
 
   // Citation copy handler
@@ -609,14 +698,107 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
               <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}`} />
             </button>
 
-            {/* Share */}
-            <button
-              onClick={handleShare}
-              className={`p-2 rounded-xl border ${currentTheme.borderColor} hover:bg-stone-200/40 transition-all cursor-pointer relative ${currentTheme.bodyText}`}
-              title="分享文章"
-            >
-              {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4" />}
-            </button>
+            {/* Share with Social Popover */}
+            <div className="relative">
+              <button
+                onClick={handleShare}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border transition-all cursor-pointer ${
+                  showShareMenu
+                    ? 'bg-amber-500 text-stone-950 border-amber-600 font-bold'
+                    : `${currentTheme.borderColor} hover:bg-stone-200/40 ${currentTheme.bodyText}`
+                }`}
+                title="分享至社群媒體 (Facebook, LINE, X)"
+              >
+                <Share2 className="w-4 h-4" />
+                <span className="hidden sm:inline text-xs font-semibold">分享</span>
+              </button>
+
+              {/* Floating Share Menu Popover */}
+              {showShareMenu && (
+                <div className={`absolute right-0 top-full mt-2 w-60 p-2 rounded-2xl ${currentTheme.cardBg} border ${currentTheme.borderColor} shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 space-y-1`}>
+                  <div className={`px-2.5 py-1.5 text-[11px] font-bold ${currentTheme.mutedText} border-b ${currentTheme.borderColor}`}>
+                    分享專題文章至：
+                  </div>
+                  
+                  <button
+                    onClick={handleShareFacebook}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-[#1877F2]/10 hover:text-[#1877F2] transition-colors text-left cursor-pointer"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-[#1877F2] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                      <FacebookIcon className="w-3.5 h-3.5" />
+                    </div>
+                    <span>Facebook 分享</span>
+                  </button>
+
+                  <button
+                    onClick={handleShareLine}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-[#06C755]/10 hover:text-[#06C755] transition-colors text-left cursor-pointer"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-[#06C755] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                      <LineIcon className="w-3.5 h-3.5" />
+                    </div>
+                    <span>LINE 好友 / 群組</span>
+                  </button>
+
+                  <button
+                    onClick={handleShareThreads}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-stone-500/10 hover:text-stone-900 dark:hover:text-white transition-colors text-left cursor-pointer"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center shrink-0 shadow-2xs">
+                      <ThreadsIcon className="w-3.5 h-3.5" />
+                    </div>
+                    <span>Threads 串文</span>
+                  </button>
+
+                  <button
+                    onClick={handleShareInstagram}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-pink-500/10 hover:text-[#E1306C] transition-colors text-left cursor-pointer"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                      <InstagramIcon className="w-3.5 h-3.5" />
+                    </div>
+                    <span>Instagram (限動/貼文)</span>
+                  </button>
+
+                  <button
+                    onClick={handleShareTwitter}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-stone-500/10 hover:text-stone-900 dark:hover:text-white transition-colors text-left cursor-pointer"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center shrink-0 shadow-2xs">
+                      <TwitterXIcon className="w-3.5 h-3.5" />
+                    </div>
+                    <span>X (Twitter) 分享</span>
+                  </button>
+
+                  <div className={`my-1 border-t ${currentTheme.borderColor}`} />
+
+                  <button
+                    onClick={handleCopyArticleLink}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold hover:bg-amber-500/10 hover:text-amber-700 transition-colors text-left cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-6 h-6 rounded-full bg-stone-200 text-stone-700 flex items-center justify-center shrink-0">
+                        {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                      </div>
+                      <span>{copied ? '已複製文章網址！' : '複製專題連結'}</span>
+                    </div>
+                    {copied && <span className="text-[10px] text-emerald-600 font-bold">OK</span>}
+                  </button>
+
+                  {typeof navigator !== 'undefined' && 'share' in navigator && (
+                    <button
+                      onClick={handleNativeShare}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors text-left cursor-pointer"
+                    >
+                      <div className="w-6 h-6 rounded-full bg-stone-100 text-stone-600 flex items-center justify-center shrink-0 border border-stone-300">
+                        <Share2 className="w-3.5 h-3.5" />
+                      </div>
+                      <span>手機原生分享...</span>
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -781,7 +963,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
           )}
 
           {/* Author info & Read statistics */}
-          <div className="flex items-center justify-between pt-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-4 gap-3">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-stone-300 border border-stone-400 flex items-center justify-center font-bold text-stone-900 text-sm overflow-hidden shrink-0">
                 {article.author.name.slice(0, 1)}
@@ -801,6 +983,73 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
                 <Eye className="w-3.5 h-3.5" />
                 {article.views} 次閱讀
               </span>
+            </div>
+          </div>
+
+          {/* Social Share Quick Bar */}
+          <div className={`pt-4 border-t ${currentTheme.borderColor} flex flex-wrap items-center justify-between gap-3 text-xs`}>
+            <div className={`flex items-center gap-1.5 font-bold ${currentTheme.secondaryText}`}>
+              <Share2 className="w-3.5 h-3.5 text-amber-600" />
+              <span>分享專題：</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={handleShareFacebook}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1877F2] hover:bg-[#166fe5] text-white font-medium text-xs transition-all shadow-2xs hover:shadow-xs cursor-pointer active:scale-95"
+                title="分享至 Facebook"
+              >
+                <FacebookIcon className="w-3.5 h-3.5" />
+                <span>Facebook</span>
+              </button>
+              <button
+                onClick={handleShareLine}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#06C755] hover:bg-[#05b34c] text-white font-medium text-xs transition-all shadow-2xs hover:shadow-xs cursor-pointer active:scale-95"
+                title="分享至 LINE"
+              >
+                <LineIcon className="w-3.5 h-3.5" />
+                <span>LINE</span>
+              </button>
+              <button
+                onClick={handleShareThreads}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-black text-white font-medium text-xs transition-all shadow-2xs hover:shadow-xs cursor-pointer active:scale-95"
+                title="發布至 Threads"
+              >
+                <ThreadsIcon className="w-3.5 h-3.5" />
+                <span>Threads</span>
+              </button>
+              <button
+                onClick={handleShareInstagram}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] hover:opacity-90 text-white font-medium text-xs transition-all shadow-2xs hover:shadow-xs cursor-pointer active:scale-95"
+                title="分享至 Instagram"
+              >
+                <InstagramIcon className="w-3.5 h-3.5" />
+                <span>Instagram</span>
+              </button>
+              <button
+                onClick={handleShareTwitter}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black hover:bg-stone-800 text-white font-medium text-xs transition-all shadow-2xs hover:shadow-xs cursor-pointer active:scale-95"
+                title="分享至 X (Twitter)"
+              >
+                <TwitterXIcon className="w-3.5 h-3.5" />
+                <span>X (Twitter)</span>
+              </button>
+              <button
+                onClick={handleCopyArticleLink}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border ${currentTheme.borderColor} ${currentTheme.cardBg} hover:border-amber-500 ${currentTheme.bodyText} font-medium text-xs transition-all shadow-2xs cursor-pointer active:scale-95`}
+                title="複製專題網址"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="text-emerald-700 font-bold">已複製！</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5 text-stone-500" />
+                    <span>複製連結</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </header>
@@ -933,6 +1182,92 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
             ))}
           </div>
         )}
+
+        {/* Dedicated Social Media Share Section */}
+        <section
+          aria-label="分享至社群媒體"
+          className={`mt-10 p-6 sm:p-8 rounded-2xl ${currentTheme.cardBg} border ${currentTheme.borderColor} shadow-xs space-y-4`}
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+            <div className="space-y-1.5 max-w-md">
+              <div className="flex items-center gap-2">
+                <Share2 className={`w-5 h-5 ${accentStyle.highlightText}`} />
+                <h3 className={`text-base sm:text-lg font-bold ${currentTheme.bodyText}`}>
+                  分享此篇專題 · 傳播歷史記憶
+                </h3>
+              </div>
+              <p className={`text-xs sm:text-sm ${currentTheme.secondaryText} leading-relaxed`}>
+                喜歡這篇深度專題嗎？快速分享至社群平台，讓更多人重溫時代舊聞、發掘深處記憶。
+              </p>
+            </div>
+
+            {/* Social Action Buttons */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              <button
+                onClick={handleShareFacebook}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] text-white font-bold text-xs sm:text-sm transition-all shadow-xs hover:shadow-md cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                title="分享專題至 Facebook"
+              >
+                <FacebookIcon className="w-4 h-4" />
+                <span>Facebook</span>
+              </button>
+
+              <button
+                onClick={handleShareLine}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#06C755] hover:bg-[#05b34c] text-white font-bold text-xs sm:text-sm transition-all shadow-xs hover:shadow-md cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                title="傳送專題至 LINE"
+              >
+                <LineIcon className="w-4 h-4" />
+                <span>LINE</span>
+              </button>
+
+              <button
+                onClick={handleShareThreads}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-black text-white font-bold text-xs sm:text-sm transition-all shadow-xs hover:shadow-md cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                title="發布至 Threads 串文"
+              >
+                <ThreadsIcon className="w-4 h-4" />
+                <span>Threads</span>
+              </button>
+
+              <button
+                onClick={handleShareInstagram}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] hover:opacity-90 text-white font-bold text-xs sm:text-sm transition-all shadow-xs hover:shadow-md cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                title="分享至 Instagram (限時動態 / 貼文)"
+              >
+                <InstagramIcon className="w-4 h-4" />
+                <span>Instagram</span>
+              </button>
+
+              <button
+                onClick={handleShareTwitter}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-black hover:bg-stone-800 text-white font-bold text-xs sm:text-sm transition-all shadow-xs hover:shadow-md cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                title="發布至 X (Twitter)"
+              >
+                <TwitterXIcon className="w-4 h-4" />
+                <span>X (Twitter)</span>
+              </button>
+
+              <button
+                onClick={handleCopyArticleLink}
+                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border ${currentTheme.borderColor} ${currentTheme.cardBg} hover:border-amber-500 ${currentTheme.bodyText} font-bold text-xs sm:text-sm transition-all shadow-xs cursor-pointer hover:scale-[1.02] active:scale-[0.98]`}
+                title="複製專題完整網址"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-4 h-4 text-emerald-600" />
+                    <span className="text-emerald-700">已複製網址！</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4 text-stone-500" />
+                    <span>複製連結</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </section>
 
         {/* GEO 關鍵區塊 3: 參考資料與出處列表 (Citable Sources & References) */}
         <section
