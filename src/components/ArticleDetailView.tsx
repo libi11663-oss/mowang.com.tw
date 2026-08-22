@@ -236,6 +236,12 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
   const [citationCopied, setCitationCopied] = useState(false);
   const [likesCount, setLikesCount] = useState(article.likes || 0);
   const [hasLiked, setHasLiked] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3200);
+  };
 
   // Dynamic JSON-LD (NewsArticle + FAQPage + BreadcrumbList) injection
   useEffect(() => {
@@ -430,41 +436,72 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
   const handleShareFacebook = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     const url = encodeURIComponent(getCanonicalShareUrl());
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'noopener,noreferrer,width=620,height=580');
+    const quote = encodeURIComponent(`【莫忘舊聞】${article.title} — 複習舊聞 · 挖掘深處記憶`);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${quote}`, '_blank', 'noopener,noreferrer,width=620,height=580');
+    showToast('已開啟 Facebook 發文視窗');
     setShowShareMenu(false);
   };
 
   const handleShareLine = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    const url = encodeURIComponent(getCanonicalShareUrl());
-    const text = encodeURIComponent(`【莫忘舊聞】${article.title}\n${article.subtitle ? article.subtitle + '\n' : ''}${getCanonicalShareUrl()}`);
-    window.open(`https://social-plugins.line.me/lineit/share?url=${url}&text=${text}`, '_blank', 'noopener,noreferrer,width=620,height=580');
+    const url = getCanonicalShareUrl();
+    const message = `【莫忘舊聞】${article.title}\n\n複習舊聞 · 挖掘深處記憶\n👉 閱讀全文：${url}`;
+    // LINE Official Universal Link scheme for direct chat selection and message sending
+    const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(message)}`;
+    window.open(lineUrl, '_blank', 'noopener,noreferrer');
+    showToast('已開啟 LINE！請選擇要發送的聊天室或好友');
     setShowShareMenu(false);
   };
 
   const handleShareThreads = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     const url = getCanonicalShareUrl();
-    const text = encodeURIComponent(`【莫忘舊聞】${article.title}\n${article.subtitle ? article.subtitle + '\n' : ''}${url}`);
-    window.open(`https://www.threads.net/intent/post?text=${text}`, '_blank', 'noopener,noreferrer,width=620,height=580');
+    const message = `【莫忘舊聞】${article.title}\n\n${article.excerpt ? article.excerpt.slice(0, 100) + '...\n\n' : ''}複習舊聞 · 挖掘深處記憶\n${url}`;
+    try {
+      navigator.clipboard.writeText(message);
+    } catch (_) {}
+    const threadsUrl = `https://www.threads.net/intent/post?text=${encodeURIComponent(message)}`;
+    window.open(threadsUrl, '_blank', 'noopener,noreferrer');
+    showToast('已開啟 Threads 發文視窗並填入專題內容');
     setShowShareMenu(false);
   };
 
   const handleShareInstagram = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     const url = getCanonicalShareUrl();
-    navigator.clipboard.writeText(`【莫忘舊聞】${article.title}\n${url}`);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
-    window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
-    setShowShareMenu(false);
+    const text = `【莫忘舊聞】${article.title}\n\n複習舊聞 · 挖掘深處記憶\n${url}`;
+
+    // On mobile devices supporting navigator.share (iOS Safari / Android Chrome),
+    // invoking native share triggers Instagram Stories / Chats directly!
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      navigator
+        .share({
+          title: `【莫忘舊聞】${article.title}`,
+          text: `【莫忘舊聞】${article.title}\n${article.excerpt}`,
+          url: url,
+        })
+        .then(() => {
+          setShowShareMenu(false);
+        })
+        .catch(() => {});
+    } else {
+      // Desktop fallback: copy content to clipboard and guide user
+      try {
+        navigator.clipboard.writeText(text);
+      } catch (_) {}
+      showToast('已複製專題標題與網址！可至 Instagram 貼文或限動貼上');
+      window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
+      setShowShareMenu(false);
+    }
   };
 
   const handleShareTwitter = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     const url = encodeURIComponent(getCanonicalShareUrl());
-    const text = encodeURIComponent(`【莫忘舊聞】${article.title} — 複習舊聞 · 挖掘深處記憶\n`);
-    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank', 'noopener,noreferrer,width=620,height=580');
+    const text = encodeURIComponent(`【莫忘舊聞】${article.title}\n\n複習舊聞 · 挖掘深處記憶\n`);
+    const hashtags = encodeURIComponent((article.tags || ['莫忘舊聞', '歷史專題']).slice(0, 3).join(','));
+    window.open(`https://x.com/intent/post?text=${text}&url=${url}&hashtags=${hashtags}`, '_blank', 'noopener,noreferrer,width=620,height=580');
+    showToast('已開啟 X (Twitter) 貼文發布編輯器');
     setShowShareMenu(false);
   };
 
@@ -472,6 +509,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
     if (e) e.stopPropagation();
     navigator.clipboard.writeText(getCanonicalShareUrl());
     setCopied(true);
+    showToast('已成功複製專題完整網址！');
     setTimeout(() => setCopied(false), 2500);
   };
 
@@ -481,7 +519,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
       navigator
         .share({
           title: `【莫忘舊聞】${article.title}`,
-          text: article.excerpt,
+          text: `【莫忘舊聞】${article.title}\n\n${article.excerpt}`,
           url: getCanonicalShareUrl(),
         })
         .then(() => setShowShareMenu(false))
@@ -1195,7 +1233,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
               <div className="flex items-center gap-2">
                 <Share2 className={`w-5 h-5 ${accentStyle.highlightText}`} />
                 <h3 className={`text-base sm:text-lg font-bold ${currentTheme.bodyText}`}>
-                  分享此篇專題 · 傳播歷史記憶
+                  分享此篇專題 · 擴大複習人數
                 </h3>
               </div>
               <p className={`text-xs sm:text-sm ${currentTheme.secondaryText} leading-relaxed`}>
@@ -1405,6 +1443,16 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
           </section>
         )}
       </main>
+
+      {/* Dynamic Share & Action Feedback Toast */}
+      {toastMessage && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-3 bg-[#1C1917] text-white rounded-2xl shadow-2xl border border-amber-500/40 flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-3 duration-200 max-w-[92vw] text-xs sm:text-sm font-medium backdrop-blur-md">
+          <div className="w-5 h-5 rounded-full bg-amber-500 text-stone-950 flex items-center justify-center shrink-0 shadow-xs">
+            <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+          </div>
+          <span className="leading-snug">{toastMessage}</span>
+        </div>
+      )}
     </div>
   );
 };

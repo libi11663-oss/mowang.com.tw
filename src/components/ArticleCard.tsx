@@ -24,14 +24,16 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   const handleShare = (e: React.MouseEvent) => {
     e.stopPropagation();
     const shareUrl = `https://mowang.com.tw/article/${article.id}`;
-    if (navigator.share) {
-      navigator.share({
-        title: `【莫忘舊聞】${article.title}`,
-        text: article.excerpt,
-        url: shareUrl,
-      }).catch(() => {});
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      navigator
+        .share({
+          title: `【莫忘舊聞】${article.title}`,
+          text: `【莫忘舊聞】${article.title}\n${article.excerpt}`,
+          url: shareUrl,
+        })
+        .catch(() => {});
     } else {
-      navigator.clipboard.writeText(shareUrl);
+      navigator.clipboard.writeText(`【莫忘舊聞】${article.title}\n${shareUrl}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
